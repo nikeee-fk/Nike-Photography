@@ -1,122 +1,22 @@
 [
-  {
-    "id": "mountain-001",
-    "title": "雲の向こう",
-    "category": "mountain",
-    "categoryLabel": "山岳",
-    "year": "2026",
-    "location": "長野",
-    "description": "朝の光が山の稜線に触れる瞬間を記録した作品。",
-    "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80"
-  },
-  {
-    "id": "mountain-002",
-    "title": "雪の朝",
-    "category": "mountain",
-    "categoryLabel": "山岳",
-    "year": "2025",
-    "location": "北海道",
-    "description": "白い空気の中で静かに残る山の輪郭。",
-    "image": "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1200&q=80"
-  },
-  {
-    "id": "ocean-001",
-    "title": "水平線",
-    "category": "ocean",
-    "categoryLabel": "海岸",
-    "year": "2025",
-    "location": "沖縄",
-    "description": "波が静まったあとに残る、淡い海面の時間。",
-    "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80"
-  },
-  {
-    "id": "ocean-002",
-    "title": "静かな海",
-    "category": "ocean",
-    "categoryLabel": "海岸",
-    "year": "2024",
-    "location": "湘南",
-    "description": "逆光の中で海は一枚の銀色の紙のように見えた。",
-    "image": "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80"
-  },
-  {
-    "id": "forest-001",
-    "title": "森の呼吸",
-    "category": "forest",
-    "categoryLabel": "森林",
-    "year": "2024",
-    "location": "京都",
-    "description": "木々の間を通る光が、森全体を静かに揺らす。",
-    "image": "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1200&q=80"
-  },
-  {
-    "id": "forest-002",
-    "title": "深い緑",
-    "category": "forest",
-    "categoryLabel": "森林",
-    "year": "2025",
-    "location": "奈良",
-    "description": "深い森の緑は、地面にまで静かに落ちていた。",
-    "image": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=80"
-  },
-  {
-    "id": "urban-001",
-    "title": "都市の余白",
-    "category": "urban",
-    "categoryLabel": "都市",
-    "year": "2026",
-    "location": "東京",
-    "description": "人が去ったあとに残る、静かな街路の輪郭。",
-    "image": "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1200&q=80"
-  },
-  {
-    "id": "urban-002",
-    "title": "雨上がり",
-    "category": "urban",
-    "categoryLabel": "都市",
-    "year": "2024",
-    "location": "上海",
-    "description": "雨の匂いが残る街の、少しだけ明るい時間。",
-    "image": "https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=1200&q=80"
-  },
-  {
-    "id": "mountain-003",
-    "title": "遠くの稜線",
-    "category": "mountain",
-    "categoryLabel": "山岳",
-    "year": "2023",
-    "location": "山梨",
-    "description": "遠くに見える山の輪郭だけが、時間を残していた。",
-    "image": "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=80"
-  },
-  {
-    "id": "ocean-003",
-    "title": "白い波",
-    "category": "ocean",
-    "categoryLabel": "海岸",
-    "year": "2022",
-    "location": "静岡",
-    "description": "風が強くて、波の輪郭だけが一番はっきり残っていた。",
-    "image": "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80"
-  },
-  {
-    "id": "forest-003",
-    "title": "光の道",
-    "category": "forest",
-    "categoryLabel": "森林",
-    "year": "2024",
-    "location": "長野",
-    "description": "木漏れ日が細い道を照らしていた。",
-    "image": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
-  },
-  {
-    "id": "urban-003",
-    "title": "空白の街",
-    "category": "urban",
-    "categoryLabel": "都市",
-    "year": "2023",
-    "location": "東京",
-    "description": "夕方の街は、生活の音を持ちながら静かに眠っていた。",
-    "image": "https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1200&q=80"
-  }
+  {"id":"mountain-001","title":"雲の向こう","category":"mountain","categoryLabel":"山岳","year":"2026","location":"長野","description":"朝の光が山の稜線に触れる瞬間を記録した作品。","image":"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80"},
+  {"id":"mountain-002","title":"雪の朝","category":"mountain","categoryLabel":"山岳","year":"2025","location":"北海道","description":"白い空気の中で静かに残る山の輪郭。","image":"https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1200&q=80"},
+  {"id":"mountain-003","title":"遠くの稜線","category":"mountain","categoryLabel":"山岳","year":"2023","location":"山梨","description":"遠くに見える山の輪郭だけが、時間を残していた。","image":"https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=80"},
+  {"id":"mountain-004","title":"霧の斜面","category":"mountain","categoryLabel":"山岳","year":"2022","location":"群馬","description":"霧の向こうに現れる斜面の静かな表情。","image":"https://images.unsplash.com/photo-1464278533981-50106e6176b1?auto=format&fit=crop&w=1200&q=80"},
+  {"id":"ocean-001","title":"水平線","category":"ocean","categoryLabel":"海岸","year":"2025","location":"沖縄","description":"波が静まったあとに残る、淡い海面の時間。","image":"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80"},
+  {"id":"ocean-002","title":"静かな海","category":"ocean","categoryLabel":"海岸","year":"2024","location":"湘南","description":"逆光の中で海は一枚の銀色の紙のように見えた。","image":"https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80"},
+  {"id":"ocean-003","title":"白い波","category":"ocean","categoryLabel":"海岸","year":"2022","location":"静岡","description":"風が強くて、波の輪郭だけが一番はっきり残っていた。","image":"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80"},
+  {"id":"ocean-004","title":"海の余白","category":"ocean","categoryLabel":"海岸","year":"2021","location":"高知","description":"水平線の向こうに広がる、何もない時間。","image":"https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=1200&q=80"},
+  {"id":"forest-001","title":"森の呼吸","category":"forest","categoryLabel":"森林","year":"2024","location":"京都","description":"木々の間を通過する光が、森全体を静かに揺らす。","image":"https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1200&q=80"},
+  {"id":"forest-002","title":"深い緑","category":"forest","categoryLabel":"森林","year":"2025","location":"奈良","description":"深い森の緑は、地面にまで静かに落ちていた。","image":"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=80"},
+  {"id":"forest-003","title":"光の道","category":"forest","categoryLabel":"森林","year":"2024","location":"長野","description":"木漏れ日が細い道を照らしていた。","image":"https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"},
+  {"id":"forest-004","title":"静かな木々","category":"forest","categoryLabel":"森林","year":"2022","location":"屋久島","description":"雨上がりの森に残る、柔らかな湿度。","image":"https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1200&q=80"},
+  {"id":"urban-001","title":"都市の余白","category":"urban","categoryLabel":"都市","year":"2026","location":"東京","description":"人が去ったあとに残る、静かな街路の輪郭。","image":"https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1200&q=80"},
+  {"id":"urban-002","title":"雨上がり","category":"urban","categoryLabel":"都市","year":"2024","location":"上海","description":"雨の匂いが残る街の、少しだけ明るい時間。","image":"https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=1200&q=80"},
+  {"id":"urban-003","title":"空白の街","category":"urban","categoryLabel":"都市","year":"2023","location":"東京","description":"夕方の街は、生活の音を持ちながら静かに眠っていた。","image":"https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1200&q=80"},
+  {"id":"urban-004","title":"遠い窓","category":"urban","categoryLabel":"都市","year":"2022","location":"横浜","description":"窓に映る光と、遠くを通り過ぎる時間。","image":"https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80"},
+  {"id":"travel-001","title":"旅の断片","category":"mountain","categoryLabel":"旅の記録","year":"2025","location":"長野","description":"旅の途中で出会った、短い光の断片。","image":"https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80"},
+  {"id":"travel-002","title":"遠い午後","category":"ocean","categoryLabel":"旅の記録","year":"2024","location":"瀬戸内","description":"午後の海に残る、ゆっくりとした時間。","image":"https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=80"},
+  {"id":"travel-003","title":"雨の森","category":"forest","categoryLabel":"旅の記録","year":"2023","location":"屋久島","description":"雨音だけが続く森の中で見つけた風景。","image":"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80"},
+  {"id":"travel-004","title":"夜の街","category":"urban","categoryLabel":"旅の記録","year":"2022","location":"大阪","description":"夜の街角に浮かぶ、静かな明かり。","image":"https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1200&q=80"}
 ]
