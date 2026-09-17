@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>World Clock — Nick Photography</title>
+  <meta name="description" content="A simple digital clock showing the current time in different time zones.">
+  <link rel="stylesheet" href="./css/clock.css">
+</head>
+<body>
+  <header class="clock-header">
+    <a href="./index.html">NICK / PHOTOGRAPHY</a>
+    <a href="./index.html">Back to portfolio ↗</a>
+  </header>
+
+  <main class="clock-page">
+    <div class="clock-heading">
+      <p class="eyebrow">World time / Live</p>
+      <h1>Current time,<br>across places.</h1>
+      <div class="clock-controls">
+        <button class="format-button active" data-format="24">24-hour</button>
+        <button class="format-button" data-format="12">12-hour</button>
+      </div>
+    </div>
+
+    <section class="clock-grid" id="clockGrid" aria-live="polite"></section>
+  </main>
+
+  <footer class="clock-footer">Times update every second · Your browser's current date</footer>
+  <script src="./js/clock.js"></script>
+</body>
+</html>
