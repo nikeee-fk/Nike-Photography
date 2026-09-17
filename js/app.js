@@ -4,7 +4,10 @@ const state = {
   rowPositions: [],
   paused: false,
   filter: "all",
-  autoTimer: null
+  autoTimer: null,
+  animationFrame: null,
+  lastFrame: 0,
+  rowOffsets: []
 };
 
 const views = document.querySelectorAll("[data-view]");
@@ -19,7 +22,7 @@ const mobileMenu = document.getElementById("mobileMenu");
 const menuButton = document.getElementById("menuButton");
 
 const ROW_COUNT = 5;
-const AUTOPLAY_MS = 2000;
+const SPEED = 22;
 
 function escapeHtml(value) {
   return String(value)
@@ -32,12 +35,8 @@ function escapeHtml(value) {
 
 function showView(route) {
   const target = route === "author" || route === "works" ? route : "home";
-  views.forEach((view) => {
-    view.hidden = view.dataset.view !== target;
-  });
-  routeLinks.forEach((link) => {
-    link.classList.toggle("active", link.dataset.route === target);
-  });
+  views.forEach((view) => { view.hidden = view.dataset.view !== target; });
+  routeLinks.forEach((link) => link.classList.toggle("active", link.dataset.route === target));
   mobileMenu.classList.remove("open");
   document.body.classList.remove("menu-open");
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -50,77 +49,114 @@ function distributeIntoRows(items) {
 }
 
 function renderWorks() {
-  state.filtered = state.filter === "all"
-    ? state.works
-    : state.works.filter((work) => work.category === state.filter);
-
+  state.filtered = state.filter === "all" ? state.works : state.works.filter((work) => work.category === state.filter);
   const rows = distributeIntoRows(state.filtered);
-  state.rowPositions = rows.map(() => 0);
+  state.rowOffsets = rows.map(() => 0);
 
-  rowsRoot.innerHTML = rows.map((row, rowIndex) => `
-    <div class="carousel-row" data-row="${rowIndex}">
-      <div class="carousel-row-track">
-        ${row.map((work) => `
-          <article class="work-card">
-            <img src="${escapeHtml(work.image)}" alt="${escapeHtml(work.title)}" loading="lazy" />
-            <div class="work-card-info">
-              <h3 class="work-card-title">${escapeHtml(work.title)}</h3>
-              <p class="work-card-description">${escapeHtml(work.description)}</p>
-              <div class="work-card-meta">
-                <span>${escapeHtml(work.location)}</span>
-                <span>${escapeHtml(work.year)}</span>
-                <span>${escapeHtml(work.categoryLabel)}</span>
+  rowsRoot.innerHTML = rows.map((row, rowIndex) => {
+    const repeated = [...row, ...row];
+    return `
+      <div class="carousel-row" data-row="${rowIndex}">
+        <div class="carousel-row-track">
+          ${repeated.map((work) => `
+            <article class="work-card" data-id="${escapeHtml(work.id)}">
+              <img src="${escapeHtml(work.image)}" alt="${escapeHtml(work.title)}" loading="lazy" />
+              <div class="work-card-info">
+                <h3 class="work-card-title">${escapeHtml(work.title)}</h3>
+                <p class="work-card-description">${escapeHtml(work.description)}</p>
+                <div class="work-card-meta"><span>${escapeHtml(work.location)}</span><span>${escapeHtml(work.year)}</span><span>${escapeHtml(work.categoryLabel)}</span></div>
               </div>
-            </div>
-          </article>
-        `).join("")}
+            </article>
+          `).join("")}
+        </div>
       </div>
-    </div>
-  `).join("");
+    `;
+  }).join("");
 
-  updatePositions();
+  rowsRoot.querySelectorAll(".work-card").forEach((card) => {
+    card.addEventListener("click", () => openPhoto(card.dataset.id));
+  });
   updateCounter();
 }
 
-function updatePositions() {
-  rowsRoot.querySelectorAll(".carousel-row").forEach((row, rowIndex) => {
-    const track = row.querySelector(".carousel-row-track");
-    const card = track?.querySelector(".work-card");
-    if (!card) return;
-    const gap = 14;
-    const distance = card.getBoundingClientRect().width + gap;
-    track.style.transform = `translate3d(-${state.rowPositions[rowIndex] * distance}px, 0, 0)`;
-  });
+function getRowLoopWidth(row) {
+  const track = row.querySelector(".carousel-row-track");
+  const cards = track?.querySelectorAll(".work-card");
+  if (!track || !cards?.length) return 0;
+  return track.scrollWidth / 2;
+}
+
+function animateRows(timestamp) {
+  if (!state.lastFrame) state.lastFrame = timestamp;
+  const elapsed = Math.min(timestamp - state.lastFrame, 64);
+  state.lastFrame = timestamp;
+
+  if (!state.paused && !document.hidden) {
+    rowsRoot.querySelectorAll(".carousel-row").forEach((row, index) => {
+      const loopWidth = getRowLoopWidth(row);
+      if (!loopWidth) return;
+      const direction = index % 2 === 0 ? 1 : -1;
+      state.rowOffsets[index] = (state.rowOffsets[index] + direction * SPEED * elapsed / 1000) % loopWidth;
+      if (state.rowOffsets[index] < 0) state.rowOffsets[index] += loopWidth;
+      row.querySelector(".carousel-row-track").style.transform = `translate3d(${-state.rowOffsets[index]}px, 0, 0)`;
+    });
+  }
+  state.animationFrame = requestAnimationFrame(animateRows);
 }
 
 function updateCounter() {
   const total = state.filtered.length;
-  const current = total ? Math.min(state.rowPositions.reduce((sum, value) => sum + value, 0) + 1, total) : 0;
-  counter.textContent = `${String(current).padStart(2, "0")} / ${String(total).padStart(2, "0")}`;
+  counter.textContent = `${total ? "01" : "00"} / ${String(total).padStart(2, "0")}`;
 }
 
-function shiftRows(direction) {
-  const rows = rowsRoot.querySelectorAll(".carousel-row");
-  rows.forEach((row, rowIndex) => {
-    const count = row.querySelectorAll(".work-card").length;
-    if (!count) return;
-    state.rowPositions[rowIndex] = (state.rowPositions[rowIndex] + direction + count) % count;
+function nudgeRows(direction) {
+  rowsRoot.querySelectorAll(".carousel-row").forEach((row, index) => {
+    const cards = row.querySelectorAll(".work-card");
+    if (!cards.length) return;
+    const amount = cards[0].getBoundingClientRect().width + 14;
+    const loopWidth = getRowLoopWidth(row);
+    state.rowOffsets[index] = (state.rowOffsets[index] + direction * amount + loopWidth) % loopWidth;
   });
-  updatePositions();
-  updateCounter();
 }
 
-function startAutoPlay() {
-  clearInterval(state.autoTimer);
-  state.autoTimer = setInterval(() => {
-    if (!state.paused && !document.hidden) shiftRows(1);
-  }, AUTOPLAY_MS);
+function openPhoto(id) {
+  const work = state.filtered.find((item) => item.id === id) || state.works.find((item) => item.id === id);
+  if (!work) return;
+  const modal = document.getElementById("photoModal") || createPhotoModal();
+  modal.querySelector(".photo-modal-image").src = work.image;
+  modal.querySelector(".photo-modal-image").alt = work.title;
+  modal.querySelector(".photo-modal-title").textContent = `${work.title} / ${work.location} / ${work.year}`;
+  modal.querySelector(".photo-modal-description").textContent = work.description;
+  modal.classList.add("open");
+  document.body.classList.add("modal-open");
 }
 
-routeLinks.forEach((link) => {
-  link.addEventListener("click", () => showView(link.dataset.route));
-});
+function createPhotoModal() {
+  const modal = document.createElement("div");
+  modal.id = "photoModal";
+  modal.className = "photo-modal";
+  modal.innerHTML = `
+    <div class="photo-modal-inner" role="dialog" aria-modal="true" aria-label="作品の拡大表示">
+      <button class="photo-modal-close" type="button" aria-label="閉じる">×</button>
+      <img class="photo-modal-image" src="" alt="" />
+      <div class="photo-modal-caption"><strong class="photo-modal-title"></strong><span>クリックまたはESCで閉じる</span></div>
+      <p class="photo-modal-description"></p>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal || event.target.closest(".photo-modal-close")) closePhotoModal();
+  });
+  return modal;
+}
 
+function closePhotoModal() {
+  const modal = document.getElementById("photoModal");
+  modal?.classList.remove("open");
+  document.body.classList.remove("modal-open");
+}
+
+routeLinks.forEach((link) => link.addEventListener("click", () => showView(link.dataset.route)));
 window.addEventListener("hashchange", () => showView(location.hash.slice(1)));
 
 document.querySelectorAll(".filter-button").forEach((button) => {
@@ -136,9 +172,10 @@ pauseButton.addEventListener("click", () => {
   state.paused = !state.paused;
   pauseButton.textContent = state.paused ? "自動再生を開始" : "自動再生を停止";
 });
-previousButton.addEventListener("click", () => shiftRows(-1));
-nextButton.addEventListener("click", () => shiftRows(1));
-window.addEventListener("resize", updatePositions);
+previousButton.addEventListener("click", () => nudgeRows(-1));
+nextButton.addEventListener("click", () => nudgeRows(1));
+window.addEventListener("resize", () => { state.lastFrame = 0; });
+document.addEventListener("keydown", (event) => { if (event.key === "Escape") closePhotoModal(); });
 
 menuButton.addEventListener("click", () => {
   mobileMenu.classList.toggle("open");
@@ -146,23 +183,13 @@ menuButton.addEventListener("click", () => {
 });
 
 let dragStart = null;
-carousel.addEventListener("pointerdown", (event) => {
-  dragStart = event.clientX;
-  carousel.classList.add("dragging");
-  carousel.setPointerCapture(event.pointerId);
-});
+carousel.addEventListener("pointerdown", (event) => { dragStart = event.clientX; carousel.classList.add("dragging"); carousel.setPointerCapture(event.pointerId); });
 carousel.addEventListener("pointerup", (event) => {
-  if (dragStart !== null) {
-    const distance = event.clientX - dragStart;
-    if (Math.abs(distance) > 45) distance < 0 ? shiftRows(1) : shiftRows(-1);
-  }
+  if (dragStart !== null && Math.abs(event.clientX - dragStart) > 35) nudgeRows(event.clientX < dragStart ? 1 : -1);
   dragStart = null;
   carousel.classList.remove("dragging");
 });
-carousel.addEventListener("pointercancel", () => {
-  dragStart = null;
-  carousel.classList.remove("dragging");
-});
+carousel.addEventListener("pointercancel", () => { dragStart = null; carousel.classList.remove("dragging"); });
 
 async function loadWorks() {
   try {
@@ -170,7 +197,7 @@ async function loadWorks() {
     if (!response.ok) throw new Error("作品データを読み込めませんでした。");
     state.works = await response.json();
     renderWorks();
-    startAutoPlay();
+    state.animationFrame = requestAnimationFrame(animateRows);
   } catch (error) {
     rowsRoot.innerHTML = `<p>作品データを読み込めませんでした。works.jsonをご確認ください。</p>`;
     console.error(error);
