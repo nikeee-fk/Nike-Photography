@@ -1,208 +1,244 @@
+const ROW_COUNT = 5;
+const WORKS_PER_ROW = 8;
+const AUTO_SCROLL_SPEED = 0.7;
+
 const state = {
   works: [],
   filtered: [],
-  rowPositions: [],
+  currentFilter: "all",
+  currentIndex: 0,
+  rowOffsets: [],
   paused: false,
-  filter: "all",
-  autoTimer: null,
-  animationFrame: null,
-  lastFrame: 0,
-  rowOffsets: []
+  lastTimestamp: 0,
+  rafId: null,
 };
 
-const views = document.querySelectorAll("[data-view]");
-const routeLinks = document.querySelectorAll("[data-route]");
-const rowsRoot = document.getElementById("worksRows");
-const carousel = document.getElementById("carousel");
-const counter = document.getElementById("worksCounter");
-const pauseButton = document.getElementById("pauseButton");
-const previousButton = document.getElementById("previousButton");
-const nextButton = document.getElementById("nextButton");
-const mobileMenu = document.getElementById("mobileMenu");
+const worksGrid = document.getElementById("worksGrid");
+const worksList = document.getElementById("worksList");
+const loadMoreButton = document.getElementById("loadMoreButton");
+const filterButtons = document.querySelectorAll(".filter-button");
+const viewButtons = document.querySelectorAll(".view-button");
 const menuButton = document.getElementById("menuButton");
+const mobileMenu = document.getElementById("mobileMenu");
+const lightbox = document.getElementById("lightbox");
+const lightboxImage = document.getElementById("lightboxImage");
+const lightboxTitle = document.getElementById("lightboxTitle");
+const lightboxCounter = document.getElementById("lightboxCounter");
+const lightboxDescription = document.getElementById("lightboxDescription");
+const lightboxClose = document.getElementById("lightboxClose");
+const lightboxPrev = document.getElementById("lightboxPrev");
+const lightboxNext = document.getElementById("lightboxNext");
 
-const ROW_COUNT = 5;
-const SPEED = 22;
-
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
-function showView(route) {
-  const target = route === "author" || route === "works" ? route : "home";
-  views.forEach((view) => { view.hidden = view.dataset.view !== target; });
-  routeLinks.forEach((link) => link.classList.toggle("active", link.dataset.route === target));
-  mobileMenu.classList.remove("open");
-  document.body.classList.remove("menu-open");
-  window.scrollTo({ top: 0, behavior: "smooth" });
+function getFilteredWorks() {
+  return state.currentFilter === "all"
+    ? state.works
+    : state.works.filter((work) => work.category === state.currentFilter);
 }
 
-function distributeIntoRows(items) {
-  const rows = Array.from({ length: ROW_COUNT }, () => []);
-  items.forEach((item, index) => rows[index % ROW_COUNT].push(item));
-  return rows;
+function updateVisibleCount() {
+  const total = state.filtered.length;
+  if (total <= WORKS_PER_ROW * ROW_COUNT) {
+    loadMoreButton.style.display = "none";
+    return;
+  }
+  loadMoreButton.style.display = "inline-flex";
 }
 
 function renderWorks() {
-  state.filtered = state.filter === "all" ? state.works : state.works.filter((work) => work.category === state.filter);
-  const rows = distributeIntoRows(state.filtered);
-  state.rowOffsets = rows.map(() => 0);
+  state.filtered = getFilteredWorks();
+  updateVisibleCount();
 
-  rowsRoot.innerHTML = rows.map((row, rowIndex) => {
-    const repeated = [...row, ...row];
-    return `
-      <div class="carousel-row" data-row="${rowIndex}">
-        <div class="carousel-row-track">
-          ${repeated.map((work) => `
-            <article class="work-card" data-id="${escapeHtml(work.id)}">
-              <img src="${escapeHtml(work.image)}" alt="${escapeHtml(work.title)}" loading="lazy" />
-              <div class="work-card-info">
-                <h3 class="work-card-title">${escapeHtml(work.title)}</h3>
-                <p class="work-card-description">${escapeHtml(work.description)}</p>
-                <div class="work-card-meta"><span>${escapeHtml(work.location)}</span><span>${escapeHtml(work.year)}</span><span>${escapeHtml(work.categoryLabel)}</span></div>
-              </div>
-            </article>
-          `).join("")}
+  const visibleWorks = state.filtered.slice(0, WORKS_PER_ROW * ROW_COUNT);
+
+  worksGrid.innerHTML = "";
+  worksList.innerHTML = "";
+
+  visibleWorks.forEach((work, index) => {
+    const item = document.createElement("article");
+    item.className = "work-item";
+    item.innerHTML = `
+      <div class="work-image-wrap">
+        <img src="${work.image}" alt="${escapeHtml(work.title)}" loading="lazy" />
+        <div class="work-overlay">
+          <div>
+            <h3 class="work-title">${escapeHtml(work.title)}</h3>
+            <p class="work-description">${escapeHtml(work.description)}</p>
+          </div>
+
+          <div class="work-meta">
+            <span>${escapeHtml(work.location)}</span>
+            <span>${escapeHtml(work.year)}</span>
+          </div>
         </div>
       </div>
+
+      <div class="work-info">
+        <div class="work-text-main">${escapeHtml(work.title)}</div>
+        <div class="work-meta-text">${escapeHtml(work.year)}</div>
+      </div>
     `;
-  }).join("");
 
-  rowsRoot.querySelectorAll(".work-card").forEach((card) => {
-    card.addEventListener("click", () => openPhoto(card.dataset.id));
-  });
-  updateCounter();
-}
+    item.addEventListener("click", () => openLightbox(state.filtered.indexOf(work)));
+    worksGrid.appendChild(item);
 
-function getRowLoopWidth(row) {
-  const track = row.querySelector(".carousel-row-track");
-  const cards = track?.querySelectorAll(".work-card");
-  if (!track || !cards?.length) return 0;
-  return track.scrollWidth / 2;
-}
+    const listRow = document.createElement("article");
+    listRow.className = "list-row";
+    listRow.innerHTML = `
+      <span class="list-index">${String(index + 1).padStart(2, "0")}</span>
+      <span class="list-title">${escapeHtml(work.title)}</span>
+      <span class="list-category">${escapeHtml(work.categoryLabel)} / ${escapeHtml(work.location)}</span>
+      <span class="list-year">${escapeHtml(work.year)}</span>
+    `;
 
-function animateRows(timestamp) {
-  if (!state.lastFrame) state.lastFrame = timestamp;
-  const elapsed = Math.min(timestamp - state.lastFrame, 64);
-  state.lastFrame = timestamp;
-
-  if (!state.paused && !document.hidden) {
-    rowsRoot.querySelectorAll(".carousel-row").forEach((row, index) => {
-      const loopWidth = getRowLoopWidth(row);
-      if (!loopWidth) return;
-      const direction = index % 2 === 0 ? 1 : -1;
-      state.rowOffsets[index] = (state.rowOffsets[index] + direction * SPEED * elapsed / 1000) % loopWidth;
-      if (state.rowOffsets[index] < 0) state.rowOffsets[index] += loopWidth;
-      row.querySelector(".carousel-row-track").style.transform = `translate3d(${-state.rowOffsets[index]}px, 0, 0)`;
-    });
-  }
-  state.animationFrame = requestAnimationFrame(animateRows);
-}
-
-function updateCounter() {
-  const total = state.filtered.length;
-  counter.textContent = `${total ? "01" : "00"} / ${String(total).padStart(2, "0")}`;
-}
-
-function nudgeRows(direction) {
-  rowsRoot.querySelectorAll(".carousel-row").forEach((row, index) => {
-    const cards = row.querySelectorAll(".work-card");
-    if (!cards.length) return;
-    const amount = cards[0].getBoundingClientRect().width + 14;
-    const loopWidth = getRowLoopWidth(row);
-    state.rowOffsets[index] = (state.rowOffsets[index] + direction * amount + loopWidth) % loopWidth;
+    listRow.addEventListener("click", () => openLightbox(state.filtered.indexOf(work)));
+    worksList.appendChild(listRow);
   });
 }
 
-function openPhoto(id) {
-  const work = state.filtered.find((item) => item.id === id) || state.works.find((item) => item.id === id);
-  if (!work) return;
-  const modal = document.getElementById("photoModal") || createPhotoModal();
-  modal.querySelector(".photo-modal-image").src = work.image;
-  modal.querySelector(".photo-modal-image").alt = work.title;
-  modal.querySelector(".photo-modal-title").textContent = `${work.title} / ${work.location} / ${work.year}`;
-  modal.querySelector(".photo-modal-description").textContent = work.description;
-  modal.classList.add("open");
-  document.body.classList.add("modal-open");
+function openLightbox(index) {
+  const currentItem = state.filtered[index];
+  if (!currentItem) return;
+
+  state.currentIndex = index;
+  lightboxImage.src = currentItem.image;
+  lightboxImage.alt = currentItem.title;
+  lightboxTitle.textContent = `${currentItem.title} / ${currentItem.location} / ${currentItem.year}`;
+  lightboxCounter.textContent = `${String(index + 1).padStart(2, "0")} / ${String(state.filtered.length).padStart(2, "0")}`;
+  lightboxDescription.textContent = currentItem.description;
+  lightbox.classList.add("open");
+  document.body.classList.add("locked");
 }
 
-function createPhotoModal() {
-  const modal = document.createElement("div");
-  modal.id = "photoModal";
-  modal.className = "photo-modal";
-  modal.innerHTML = `
-    <div class="photo-modal-inner" role="dialog" aria-modal="true" aria-label="作品の拡大表示">
-      <button class="photo-modal-close" type="button" aria-label="閉じる">×</button>
-      <img class="photo-modal-image" src="" alt="" />
-      <div class="photo-modal-caption"><strong class="photo-modal-title"></strong><span>クリックまたはESCで閉じる</span></div>
-      <p class="photo-modal-description"></p>
-    </div>
-  `;
-  document.body.appendChild(modal);
-  modal.addEventListener("click", (event) => {
-    if (event.target === modal || event.target.closest(".photo-modal-close")) closePhotoModal();
-  });
-  return modal;
+function closeLightbox() {
+  lightbox.classList.remove("open");
+  document.body.classList.remove("locked");
 }
 
-function closePhotoModal() {
-  const modal = document.getElementById("photoModal");
-  modal?.classList.remove("open");
-  document.body.classList.remove("modal-open");
+function showNext() {
+  if (!state.filtered.length) return;
+  state.currentIndex = (state.currentIndex + 1) % state.filtered.length;
+  openLightbox(state.currentIndex);
 }
 
-routeLinks.forEach((link) => link.addEventListener("click", () => showView(link.dataset.route)));
-window.addEventListener("hashchange", () => showView(location.hash.slice(1)));
+function showPrev() {
+  if (!state.filtered.length) return;
+  state.currentIndex = (state.currentIndex - 1 + state.filtered.length) % state.filtered.length;
+  openLightbox(state.currentIndex);
+}
 
-document.querySelectorAll(".filter-button").forEach((button) => {
+filterButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    document.querySelectorAll(".filter-button").forEach((item) => item.classList.remove("active"));
+    filterButtons.forEach((item) => item.classList.remove("active"));
     button.classList.add("active");
-    state.filter = button.dataset.filter;
+    state.currentFilter = button.dataset.filter;
     renderWorks();
   });
 });
 
-pauseButton.addEventListener("click", () => {
-  state.paused = !state.paused;
-  pauseButton.textContent = state.paused ? "自動再生を開始" : "自動再生を停止";
+viewButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    viewButtons.forEach((item) => item.classList.remove("active"));
+    button.classList.add("active");
+
+    const selectedView = button.dataset.view;
+    const root = document.querySelector(".works-wrap");
+    if (selectedView === "list") {
+      root.classList.add("list-mode");
+    } else {
+      root.classList.remove("list-mode");
+    }
+  });
 });
-previousButton.addEventListener("click", () => nudgeRows(-1));
-nextButton.addEventListener("click", () => nudgeRows(1));
-window.addEventListener("resize", () => { state.lastFrame = 0; });
-document.addEventListener("keydown", (event) => { if (event.key === "Escape") closePhotoModal(); });
+
+loadMoreButton.addEventListener("click", () => {
+  const nextCount = Math.min(state.filtered.length, WORKS_PER_ROW * ROW_COUNT + WORKS_PER_ROW * ROW_COUNT);
+  const visibleWorks = state.filtered.slice(0, nextCount);
+  worksGrid.innerHTML = "";
+  worksList.innerHTML = "";
+
+  visibleWorks.forEach((work, index) => {
+    const item = document.createElement("article");
+    item.className = "work-item";
+    item.innerHTML = `
+      <div class="work-image-wrap">
+        <img src="${work.image}" alt="${escapeHtml(work.title)}" loading="lazy" />
+        <div class="work-overlay">
+          <div>
+            <h3 class="work-title">${escapeHtml(work.title)}</h3>
+            <p class="work-description">${escapeHtml(work.description)}</p>
+          </div>
+          <div class="work-meta">
+            <span>${escapeHtml(work.location)}</span>
+            <span>${escapeHtml(work.year)}</span>
+          </div>
+        </div>
+      </div>
+      <div class="work-info">
+        <div class="work-text-main">${escapeHtml(work.title)}</div>
+        <div class="work-meta-text">${escapeHtml(work.year)}</div>
+      </div>
+    `;
+    item.addEventListener("click", () => openLightbox(state.filtered.indexOf(work)));
+    worksGrid.appendChild(item);
+
+    const listRow = document.createElement("article");
+    listRow.className = "list-row";
+    listRow.innerHTML = `
+      <span class="list-index">${String(index + 1).padStart(2, "0")}</span>
+      <span class="list-title">${escapeHtml(work.title)}</span>
+      <span class="list-category">${escapeHtml(work.categoryLabel)} / ${escapeHtml(work.location)}</span>
+      <span class="list-year">${escapeHtml(work.year)}</span>
+    `;
+    listRow.addEventListener("click", () => openLightbox(state.filtered.indexOf(work)));
+    worksList.appendChild(listRow);
+  });
+
+  if (visibleWorks.length >= state.filtered.length) {
+    loadMoreButton.style.display = "none";
+  }
+});
+
+lightboxClose.addEventListener("click", closeLightbox);
+lightboxPrev.addEventListener("click", showPrev);
+lightboxNext.addEventListener("click", showNext);
+lightbox.addEventListener("click", (event) => {
+  if (event.target === lightbox) closeLightbox();
+});
+document.addEventListener("keydown", (event) => {
+  if (!lightbox.classList.contains("open")) return;
+  if (event.key === "Escape") closeLightbox();
+  if (event.key === "ArrowRight") showNext();
+  if (event.key === "ArrowLeft") showPrev();
+});
 
 menuButton.addEventListener("click", () => {
   mobileMenu.classList.toggle("open");
-  document.body.classList.toggle("menu-open");
 });
-
-let dragStart = null;
-carousel.addEventListener("pointerdown", (event) => { dragStart = event.clientX; carousel.classList.add("dragging"); carousel.setPointerCapture(event.pointerId); });
-carousel.addEventListener("pointerup", (event) => {
-  if (dragStart !== null && Math.abs(event.clientX - dragStart) > 35) nudgeRows(event.clientX < dragStart ? 1 : -1);
-  dragStart = null;
-  carousel.classList.remove("dragging");
+mobileMenu.querySelectorAll("a").forEach((link) => {
+  link.addEventListener("click", () => mobileMenu.classList.remove("open"));
 });
-carousel.addEventListener("pointercancel", () => { dragStart = null; carousel.classList.remove("dragging"); });
 
 async function loadWorks() {
   try {
     const response = await fetch("./works.json");
-    if (!response.ok) throw new Error("作品データを読み込めませんでした。");
+    if (!response.ok) throw new Error("works.json not found");
+
     state.works = await response.json();
+    state.filtered = [...state.works];
     renderWorks();
-    state.animationFrame = requestAnimationFrame(animateRows);
   } catch (error) {
-    rowsRoot.innerHTML = `<p>作品データを読み込めませんでした。works.jsonをご確認ください。</p>`;
     console.error(error);
+    worksGrid.innerHTML = "<div style='padding:20px;color:#666;'>Failed to load works.json.</div>";
   }
 }
 
-showView(location.hash.slice(1) || "home");
 loadWorks();
