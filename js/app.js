@@ -1,254 +1,156 @@
-const BATCH_SIZE = 24;
+const state = {
+  works: [],
+  filtered: [],
+  currentIndex: 0,
+  paused: false,
+  filter: "all",
+  autoTimer: null
+};
 
-let allWorks = [];
-let filteredWorks = [];
-let visibleCount = BATCH_SIZE;
-let currentFilter = "all";
-let currentView = "grid";
-let currentLightboxIndex = 0;
-
-const worksGrid = document.getElementById("worksGrid");
-const worksList = document.getElementById("worksList");
-const loadMoreButton = document.getElementById("loadMoreButton");
-
-const filterButtons = document.querySelectorAll(".filter-button");
-const viewButtons = document.querySelectorAll(".view-button");
-const menuButton = document.getElementById("menuButton");
+const views = document.querySelectorAll("[data-view]");
+const routeLinks = document.querySelectorAll("[data-route]");
+const track = document.getElementById("worksTrack");
+const carousel = document.getElementById("carousel");
+const counter = document.getElementById("worksCounter");
+const pauseButton = document.getElementById("pauseButton");
+const previousButton = document.getElementById("previousButton");
+const nextButton = document.getElementById("nextButton");
 const mobileMenu = document.getElementById("mobileMenu");
+const menuButton = document.getElementById("menuButton");
 
-const lightbox = document.getElementById("lightbox");
-const lightboxImage = document.getElementById("lightboxImage");
-const lightboxTitle = document.getElementById("lightboxTitle");
-const lightboxCounter = document.getElementById("lightboxCounter");
-const lightboxDescription = document.getElementById("lightboxDescription");
-const lightboxClose = document.getElementById("lightboxClose");
-const lightboxPrev = document.getElementById("lightboxPrev");
-const lightboxNext = document.getElementById("lightboxNext");
-
-function escapeHtml(text) {
-  return String(text)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
-function getFilteredWorks() {
-  if (currentFilter === "all") {
-    return allWorks;
-  }
-
-  return allWorks.filter((work) => work.category === currentFilter);
-}
-
-function updateVisibleCount() {
-  const total = filteredWorks.length;
-  visibleCount = Math.min(visibleCount, total);
-
-  if (visibleCount >= total) {
-    loadMoreButton.style.display = "none";
-  } else {
-    loadMoreButton.style.display = "inline-flex";
-  }
+function showView(route) {
+  const target = route === "author" || route === "works" ? route : "home";
+  views.forEach((view) => {
+    view.hidden = view.dataset.view !== target;
+  });
+  routeLinks.forEach((link) => {
+    link.classList.toggle("active", link.dataset.route === target);
+  });
+  mobileMenu.classList.remove("open");
+  document.body.classList.remove("menu-open");
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function renderWorks() {
-  filteredWorks = getFilteredWorks();
-  updateVisibleCount();
+  state.filtered = state.filter === "all"
+    ? state.works
+    : state.works.filter((work) => work.category === state.filter);
 
-  const visibleWorks = filteredWorks.slice(0, visibleCount);
-
-  worksGrid.innerHTML = "";
-  worksList.innerHTML = "";
-
-  visibleWorks.forEach((work, index) => {
-    const item = document.createElement("article");
-    item.className = "work-item";
-
-    item.innerHTML = `
-      <div class="work-image-wrap">
-        <img
-          src="${work.image}"
-          alt="${escapeHtml(work.title)}"
-          loading="lazy"
-        />
-
-        <div class="work-overlay">
-          <div>
-            <h3 class="work-title">${escapeHtml(work.title)}</h3>
-            <p class="work-description">${escapeHtml(work.description)}</p>
-          </div>
-
-          <div class="work-meta">
-            <span>${escapeHtml(work.location)}</span>
-            <span>${escapeHtml(work.year)}</span>
-          </div>
+  track.innerHTML = state.filtered.map((work, index) => `
+    <article class="work-card" data-index="${index}">
+      <img src="${escapeHtml(work.image)}" alt="${escapeHtml(work.title)}" loading="lazy" />
+      <div class="work-card-info">
+        <h3 class="work-card-title">${escapeHtml(work.title)}</h3>
+        <p class="work-card-description">${escapeHtml(work.description)}</p>
+        <div class="work-card-meta">
+          <span>${escapeHtml(work.location)}</span>
+          <span>${escapeHtml(work.year)}</span>
+          <span>${escapeHtml(work.categoryLabel)}</span>
         </div>
       </div>
+    </article>
+  `).join("");
 
-      <div class="work-info">
-        <div class="work-text-main">${escapeHtml(work.title)}</div>
-        <div class="work-meta-text">${escapeHtml(work.year)}</div>
-      </div>
-    `;
-
-    item.addEventListener("click", () => {
-      openLightbox(filteredWorks.indexOf(work));
-    });
-
-    worksGrid.appendChild(item);
-
-    const listRow = document.createElement("article");
-    listRow.className = "list-row";
-    listRow.innerHTML = `
-      <span class="list-index">${String(index + 1).padStart(2, "0")}</span>
-      <span class="list-title">${escapeHtml(work.title)}</span>
-      <span class="list-category">${escapeHtml(work.categoryLabel)} / ${escapeHtml(work.location)}</span>
-      <span class="list-year">${escapeHtml(work.year)}</span>
-    `;
-
-    listRow.addEventListener("click", () => {
-      openLightbox(filteredWorks.indexOf(work));
-    });
-
-    worksList.appendChild(listRow);
+  track.querySelectorAll(".work-card").forEach((card) => {
+    card.addEventListener("click", () => goTo(Number(card.dataset.index)));
   });
+  state.currentIndex = 0;
+  updatePosition();
 }
 
-function openLightbox(index) {
-  const currentItem = filteredWorks[index];
-
-  if (!currentItem) return;
-
-  currentLightboxIndex = index;
-
-  lightboxImage.src = currentItem.image;
-  lightboxImage.alt = currentItem.title;
-
-  lightboxTitle.textContent = `${currentItem.title} / ${currentItem.location} / ${currentItem.year}`;
-  lightboxCounter.textContent = `${String(index + 1).padStart(2, "0")} / ${String(filteredWorks.length).padStart(2, "0")}`;
-  lightboxDescription.textContent = currentItem.description;
-
-  lightbox.classList.add("open");
-  document.body.classList.add("locked");
+function updatePosition() {
+  const card = track.querySelector(".work-card");
+  if (!card) return;
+  const gap = 18;
+  const offset = state.currentIndex * (card.getBoundingClientRect().width + gap);
+  track.style.transform = `translate3d(-${offset}px, 0, 0)`;
+  counter.textContent = `${String(state.currentIndex + 1).padStart(2, "0")} / ${String(state.filtered.length).padStart(2, "0")}`;
 }
 
-function closeLightbox() {
-  lightbox.classList.remove("open");
-  document.body.classList.remove("locked");
+function goTo(index) {
+  if (!state.filtered.length) return;
+  state.currentIndex = (index + state.filtered.length) % state.filtered.length;
+  updatePosition();
 }
 
-function showNext() {
-  if (!filteredWorks.length) return;
+function next() { goTo(state.currentIndex + 1); }
+function previous() { goTo(state.currentIndex - 1); }
 
-  currentLightboxIndex = (currentLightboxIndex + 1) % filteredWorks.length;
-  openLightbox(currentLightboxIndex);
+function startAutoPlay() {
+  clearInterval(state.autoTimer);
+  state.autoTimer = setInterval(() => {
+    if (!state.paused && !document.hidden) next();
+  }, 4200);
 }
 
-function showPrev() {
-  if (!filteredWorks.length) return;
+routeLinks.forEach((link) => {
+  link.addEventListener("click", () => showView(link.dataset.route));
+});
 
-  currentLightboxIndex =
-    (currentLightboxIndex - 1 + filteredWorks.length) % filteredWorks.length;
+window.addEventListener("hashchange", () => showView(location.hash.slice(1)));
 
-  openLightbox(currentLightboxIndex);
-}
-
-filterButtons.forEach((button) => {
+ document.querySelectorAll(".filter-button").forEach((button) => {
   button.addEventListener("click", () => {
-    filterButtons.forEach((item) => item.classList.remove("active"));
+    document.querySelectorAll(".filter-button").forEach((item) => item.classList.remove("active"));
     button.classList.add("active");
-
-    currentFilter = button.dataset.filter;
-    visibleCount = BATCH_SIZE;
-
+    state.filter = button.dataset.filter;
     renderWorks();
   });
 });
 
-viewButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    viewButtons.forEach((item) => item.classList.remove("active"));
-    button.classList.add("active");
-
-    const selectedView = button.dataset.view;
-
-    const root = document.querySelector(".works-wrap");
-    if (selectedView === "list") {
-      root.classList.add("list-mode");
-    } else {
-      root.classList.remove("list-mode");
-    }
-  });
+pauseButton.addEventListener("click", () => {
+  state.paused = !state.paused;
+  pauseButton.textContent = state.paused ? "自動再生を開始" : "自動再生を停止";
 });
-
-loadMoreButton.addEventListener("click", () => {
-  visibleCount += BATCH_SIZE;
-  renderWorks();
-});
-
-lightboxClose.addEventListener("click", closeLightbox);
-
-lightboxPrev.addEventListener("click", () => {
-  showPrev();
-});
-
-lightboxNext.addEventListener("click", () => {
-  showNext();
-});
-
-lightbox.addEventListener("click", (event) => {
-  if (event.target === lightbox) {
-    closeLightbox();
-  }
-});
-
-document.addEventListener("keydown", (event) => {
-  if (!lightbox.classList.contains("open")) return;
-
-  if (event.key === "Escape") {
-    closeLightbox();
-  }
-
-  if (event.key === "ArrowRight") {
-    showNext();
-  }
-
-  if (event.key === "ArrowLeft") {
-    showPrev();
-  }
-});
+previousButton.addEventListener("click", previous);
+nextButton.addEventListener("click", next);
+window.addEventListener("resize", updatePosition);
 
 menuButton.addEventListener("click", () => {
   mobileMenu.classList.toggle("open");
+  document.body.classList.toggle("menu-open");
 });
 
-mobileMenu.querySelectorAll("a").forEach((link) => {
-  link.addEventListener("click", () => {
-    mobileMenu.classList.remove("open");
-  });
+let dragStart = null;
+carousel.addEventListener("pointerdown", (event) => {
+  dragStart = event.clientX;
+  carousel.classList.add("dragging");
+  carousel.setPointerCapture(event.pointerId);
+});
+carousel.addEventListener("pointerup", (event) => {
+  if (dragStart !== null) {
+    const distance = event.clientX - dragStart;
+    if (Math.abs(distance) > 45) distance < 0 ? next() : previous();
+  }
+  dragStart = null;
+  carousel.classList.remove("dragging");
+});
+carousel.addEventListener("pointercancel", () => {
+  dragStart = null;
+  carousel.classList.remove("dragging");
 });
 
 async function loadWorks() {
   try {
     const response = await fetch("./works.json");
-    if (!response.ok) {
-      throw new Error("works.json が見つかりません");
-    }
-
-    allWorks = await response.json();
-    filteredWorks = [...allWorks];
+    if (!response.ok) throw new Error("作品データを読み込めませんでした。");
+    state.works = await response.json();
     renderWorks();
+    startAutoPlay();
   } catch (error) {
-    console.error("作品データの読み込みに失敗しました:", error);
-
-    worksGrid.innerHTML = `
-      <div style="padding:20px; color:#666;">
-        作品データの読み込みに失敗しました。works.json の場所と内容をご確認ください。
-      </div>
-    `;
+    track.innerHTML = `<p>作品データを読み込めませんでした。works.jsonをご確認ください。</p>`;
+    console.error(error);
   }
 }
 
+showView(location.hash.slice(1) || "home");
 loadWorks();
