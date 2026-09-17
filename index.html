@@ -3,41 +3,54 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nick — Landscape Photography</title>
-  <meta name="description" content="Nick's landscape photography portfolio.">
-  <link rel="stylesheet" href="./css/style.css?v=4">
+  <title>Nick — Photography</title>
+  <meta name="description" content="Nick's black and white photography portfolio.">
+  <link rel="stylesheet" href="./css/style.css?v=5">
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="#top">Nick / Photography</a>
+    <a class="brand" href="#home" data-route="home">NICK / PHOTOGRAPHY</a>
     <nav class="main-nav" aria-label="Main navigation">
-      <a href="#works">Works</a><a href="#archive">Archive</a><a href="#about">About</a><a href="#contact">Contact</a>
+      <a href="#author" data-route="author">Author</a>
+      <a href="#works" data-route="works">Works</a>
+      <a href="#archive" data-route="archive">Archive</a>
+      <a href="#contact" data-route="contact">Contact</a>
     </nav>
-    <button class="menu-button" id="menuButton" type="button">Menu</button>
-    <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile navigation">
-      <a href="#works">Works</a><a href="#archive">Archive</a><a href="#about">About</a><a href="#contact">Contact</a>
-    </nav>
+    <button class="menu-button" id="menuButton" type="button" aria-label="Open menu">Menu</button>
   </header>
+  <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile navigation">
+    <a href="#author" data-route="author">Author</a><a href="#works" data-route="works">Works</a><a href="#archive" data-route="archive">Archive</a><a href="#contact" data-route="contact">Contact</a>
+  </nav>
 
-  <main id="top">
-    <section class="hero">
-      <div class="hero-copy"><p class="eyebrow">Photography / Visual Archive</p><h1>Landscape<br>Memory</h1><p class="hero-lead">Quiet scenes captured between light, air, and the passing of time.</p></div>
-    </section>
-
-    <section class="works-section" id="works">
-      <aside class="works-title"><span>Selected Works</span></aside>
-      <div class="works-content">
-        <div class="works-toolbar"><div class="filters"><button class="filter-button active" data-filter="all">All</button><button class="filter-button" data-filter="mountain">Mountain</button><button class="filter-button" data-filter="ocean">Coast</button><button class="filter-button" data-filter="forest">Forest</button><button class="filter-button" data-filter="urban">City</button></div><button class="pause-button" id="pauseButton" type="button">Pause motion</button></div>
-        <div class="works-rows" id="worksRows" aria-label="Selected works"></div>
+  <main>
+    <section class="view home-view" data-view="home">
+      <div class="home-inner">
+        <p class="eyebrow">Photography / Visual Archive</p>
+        <h1>Quiet<br>landscapes.</h1>
+        <p class="home-intro">A visual archive of light, distance, weather, and time.</p>
+        <div class="home-actions">
+          <a class="action-button action-button-invert" href="#works" data-route="works">View works <span>↗</span></a>
+          <a class="action-button" href="#author" data-route="author">About the author <span>↗</span></a>
+          <a class="action-button" href="#archive" data-route="archive">Archive <span>↗</span></a>
+          <a class="action-button" href="#contact" data-route="contact">Contact <span>↗</span></a>
+        </div>
       </div>
+      <div class="home-footer"><span>Selected photographs</span><span>2020—2026</span></div>
     </section>
 
-    <section class="archive-section" id="archive"><p class="section-label">Archive</p><h2>Selected Projects</h2><div class="archive-list"><div><span>2026</span><strong>Mountain Studies</strong><span>Nagano</span></div><div><span>2025</span><strong>Coastal Silence</strong><span>Okinawa</span></div><div><span>2024</span><strong>Forest Fragments</strong><span>Kyoto</span></div><div><span>2023</span><strong>Urban Silence</strong><span>Tokyo</span></div></div></section>
-    <section class="about-section" id="about"><div><p class="section-label">About</p><h2>Photographer /<br>Visual Artist</h2></div><div class="about-copy"><p>I photograph the rhythm of places — how light settles, how air changes, and how time leaves traces in the landscape.</p><p>My interest is not only in scenery, but in the atmosphere that surrounds it: stillness, weather, silence, and the nearly invisible shift between moments.</p></div></section>
-    <section class="contact-section" id="contact"><div><p class="section-label">Contact</p><h2>Let's connect.</h2></div><a href="mailto:nick@example.com">nick@example.com</a></section>
+    <section class="view inner-view works-view" data-view="works" hidden>
+      <div class="view-header"><div><p class="eyebrow">02 / Gallery</p><h2>Selected works</h2></div><button class="back-button" data-route="home">← Home</button></div>
+      <div class="works-layout"><aside class="vertical-title">Works</aside><div class="works-content"><div class="works-toolbar"><div class="filters"><button class="filter-button active" data-filter="all">All</button><button class="filter-button" data-filter="mountain">Mountain</button><button class="filter-button" data-filter="ocean">Coast</button><button class="filter-button" data-filter="forest">Forest</button><button class="filter-button" data-filter="urban">City</button></div><button class="pause-button" id="pauseButton">Pause motion</button></div><div class="works-rows" id="worksRows"></div><p class="works-note">Click any photograph to enlarge it.</p></div></div>
+    </section>
+
+    <section class="view inner-view text-view" data-view="author" hidden><div class="view-header"><div><p class="eyebrow">01 / About</p><h2>The author</h2></div><button class="back-button" data-route="home">← Home</button></div><div class="text-grid"><div class="portrait-placeholder">NICK<br><small>Portrait coming soon</small></div><div class="copy"><p class="lead">I photograph the rhythm of places — how light settles, how air changes, and how time leaves traces in the landscape.</p><p>My work looks for quiet atmospheres in mountains, coastlines, forests, and cities. The images are studies of stillness, distance, and the moments between weather and light.</p><dl><div><dt>Based in</dt><dd>Japan / Anywhere</dd></div><div><dt>Practice</dt><dd>Landscape photography</dd></div><div><dt>Email</dt><dd>nick@example.com</dd></div></dl></div></div></section>
+
+    <section class="view inner-view text-view" data-view="archive" hidden><div class="view-header"><div><p class="eyebrow">03 / Archive</p><h2>Selected projects</h2></div><button class="back-button" data-route="home">← Home</button></div><div class="archive-list"><div><span>2026</span><strong>Mountain Studies</strong><span>Nagano</span></div><div><span>2025</span><strong>Coastal Silence</strong><span>Okinawa</span></div><div><span>2024</span><strong>Forest Fragments</strong><span>Kyoto</span></div><div><span>2023</span><strong>Urban Silence</strong><span>Tokyo</span></div></div></section>
+
+    <section class="view inner-view text-view" data-view="contact" hidden><div class="view-header"><div><p class="eyebrow">04 / Contact</p><h2>Let's connect.</h2></div><button class="back-button" data-route="home">← Home</button></div><div class="contact-copy"><p>For commissions, collaborations, or print inquiries, please get in touch.</p><a href="mailto:nick@example.com">nick@example.com ↗</a></div></section>
   </main>
-  <footer class="site-footer"><span>© 2026 Nick Photography</span><span>Landscape Photography</span></footer>
+  <footer class="site-footer"><span>© 2026 Nick Photography</span><span>Black / White Visual Archive</span></footer>
   <div class="photo-modal" id="photoModal" aria-hidden="true"><div class="modal-inner"><button class="modal-close" id="modalClose" aria-label="Close">×</button><img id="modalImage" alt=""><div class="modal-caption"><strong id="modalTitle"></strong><span id="modalCounter"></span></div><p id="modalDescription"></p></div></div>
-  <script src="./js/app.js?v=4"></script>
+  <script src="./js/app.js?v=5"></script>
 </body>
 </html>
