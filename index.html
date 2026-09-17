@@ -1,158 +1,43 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nick — Landscape Memory</title>
-    <meta name="description" content="Nick's landscape photography portfolio." />
-    <link rel="stylesheet" href="./css/style.css" />
-  </head>
-  <body>
-    <header class="site-header">
-      <div class="header-inner">
-        <a href="#top" class="brand">Nick / Photography</a>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nick — Landscape Photography</title>
+  <meta name="description" content="Nick's landscape photography portfolio.">
+  <link rel="stylesheet" href="./css/style.css?v=4">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top">Nick / Photography</a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="#works">Works</a><a href="#archive">Archive</a><a href="#about">About</a><a href="#contact">Contact</a>
+    </nav>
+    <button class="menu-button" id="menuButton" type="button">Menu</button>
+    <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile navigation">
+      <a href="#works">Works</a><a href="#archive">Archive</a><a href="#about">About</a><a href="#contact">Contact</a>
+    </nav>
+  </header>
 
-        <nav class="main-nav" aria-label="Main navigation">
-          <a href="#works" class="active">Works</a>
-          <a href="#archive">Archive</a>
-          <a href="#about">About</a>
-          <a href="#contact">Contact</a>
-        </nav>
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy"><p class="eyebrow">Photography / Visual Archive</p><h1>Landscape<br>Memory</h1><p class="hero-lead">Quiet scenes captured between light, air, and the passing of time.</p></div>
+    </section>
 
-        <button class="menu-button" id="menuButton" aria-label="Open menu">Menu</button>
+    <section class="works-section" id="works">
+      <aside class="works-title"><span>Selected Works</span></aside>
+      <div class="works-content">
+        <div class="works-toolbar"><div class="filters"><button class="filter-button active" data-filter="all">All</button><button class="filter-button" data-filter="mountain">Mountain</button><button class="filter-button" data-filter="ocean">Coast</button><button class="filter-button" data-filter="forest">Forest</button><button class="filter-button" data-filter="urban">City</button></div><button class="pause-button" id="pauseButton" type="button">Pause motion</button></div>
+        <div class="works-rows" id="worksRows" aria-label="Selected works"></div>
       </div>
+    </section>
 
-      <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile navigation">
-        <a href="#works">Works</a>
-        <a href="#archive">Archive</a>
-        <a href="#about">About</a>
-        <a href="#contact">Contact</a>
-      </nav>
-    </header>
-
-    <main id="top">
-      <section class="hero">
-        <div class="hero-inner">
-          <div class="eyebrow">Photography / Visual Archive</div>
-          <h1>Landscape<br />Memory</h1>
-          <p>
-            Quiet scenes captured between light, air, and the passing of time.
-          </p>
-        </div>
-      </section>
-
-      <section class="toolbar-section" id="works">
-        <div class="toolbar">
-          <div class="filters">
-            <button class="filter-button active" data-filter="all">All</button>
-            <button class="filter-button" data-filter="mountain">Mountain</button>
-            <button class="filter-button" data-filter="ocean">Coast</button>
-            <button class="filter-button" data-filter="forest">Forest</button>
-            <button class="filter-button" data-filter="urban">City</button>
-          </div>
-
-          <div class="view-switcher">
-            <button class="view-button active" data-view="grid">Grid</button>
-            <button class="view-button" data-view="list">List</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="works-wrap">
-        <div class="works-grid" id="worksGrid"></div>
-        <div class="works-list" id="worksList"></div>
-
-        <div class="load-more-wrap">
-          <button id="loadMoreButton" class="load-more-button">Load More</button>
-        </div>
-      </section>
-
-      <section class="archive-section" id="archive">
-        <div class="archive-header">
-          <div>
-            <div class="archive-label">Archive</div>
-            <h2>Selected Projects</h2>
-          </div>
-
-          <p>
-            2020–2026
-            <br />
-            A collection of memories held in light, weather, and silence.
-          </p>
-        </div>
-
-        <div class="archive-list">
-          <div class="archive-row"><span>2026</span><span>Mountain Studies</span><span>Nagano</span></div>
-          <div class="archive-row"><span>2025</span><span>Coastal Silence</span><span>Okinawa</span></div>
-          <div class="archive-row"><span>2024</span><span>Forest Fragments</span><span>Kyoto</span></div>
-          <div class="archive-row"><span>2023</span><span>Urban Silence</span><span>Tokyo</span></div>
-        </div>
-      </section>
-
-      <section class="about-section" id="about">
-        <div class="about-title-wrap">
-          <div class="section-label">About</div>
-          <h2>Photographer / Visual Artist</h2>
-        </div>
-
-        <div class="about-copy">
-          <p>
-            I photograph the rhythm of places — how light settles, how air changes,
-            and how time leaves traces in the landscape.
-          </p>
-
-          <p>
-            My interest is not only in scenery, but in the atmosphere that surrounds it:
-            stillness, weather, silence, and the nearly invisible shift that happens between moments.
-          </p>
-
-          <p>
-            Mountains, coastlines, forests, and cities all become part of the same visual language.
-          </p>
-        </div>
-      </section>
-
-      <section class="contact-section" id="contact">
-        <div>
-          <div class="section-label">Contact</div>
-          <h2>Let’s connect.</h2>
-        </div>
-
-        <div class="contact-copy">
-          <p>
-            For commissions, collaborations, or print inquiries, please get in touch.
-          </p>
-
-          <a href="mailto:nick@example.com">nick@example.com</a>
-        </div>
-      </section>
-    </main>
-
-    <footer class="site-footer">
-      <div>© 2026 Nick Photography</div>
-      <div class="footer-links">
-        <a href="#" target="_blank">Instagram</a>
-        <a href="#" target="_blank">Behance</a>
-        <a href="#contact">Contact</a>
-      </div>
-    </footer>
-
-    <div class="lightbox" id="lightbox" aria-hidden="true">
-      <div class="lightbox-content">
-        <button class="lightbox-close" id="lightboxClose" aria-label="Close">×</button>
-        <button class="lightbox-prev" id="lightboxPrev" aria-label="Previous image">‹</button>
-        <button class="lightbox-next" id="lightboxNext" aria-label="Next image">›</button>
-        <img id="lightboxImage" src="" alt="" />
-
-        <div class="lightbox-meta">
-          <div><strong id="lightboxTitle">Title</strong></div>
-          <div id="lightboxCounter">01 / 01</div>
-        </div>
-
-        <div class="lightbox-description" id="lightboxDescription"></div>
-      </div>
-    </div>
-
-    <script src="./js/app.js"></script>
-  </body>
+    <section class="archive-section" id="archive"><p class="section-label">Archive</p><h2>Selected Projects</h2><div class="archive-list"><div><span>2026</span><strong>Mountain Studies</strong><span>Nagano</span></div><div><span>2025</span><strong>Coastal Silence</strong><span>Okinawa</span></div><div><span>2024</span><strong>Forest Fragments</strong><span>Kyoto</span></div><div><span>2023</span><strong>Urban Silence</strong><span>Tokyo</span></div></div></section>
+    <section class="about-section" id="about"><div><p class="section-label">About</p><h2>Photographer /<br>Visual Artist</h2></div><div class="about-copy"><p>I photograph the rhythm of places — how light settles, how air changes, and how time leaves traces in the landscape.</p><p>My interest is not only in scenery, but in the atmosphere that surrounds it: stillness, weather, silence, and the nearly invisible shift between moments.</p></div></section>
+    <section class="contact-section" id="contact"><div><p class="section-label">Contact</p><h2>Let's connect.</h2></div><a href="mailto:nick@example.com">nick@example.com</a></section>
+  </main>
+  <footer class="site-footer"><span>© 2026 Nick Photography</span><span>Landscape Photography</span></footer>
+  <div class="photo-modal" id="photoModal" aria-hidden="true"><div class="modal-inner"><button class="modal-close" id="modalClose" aria-label="Close">×</button><img id="modalImage" alt=""><div class="modal-caption"><strong id="modalTitle"></strong><span id="modalCounter"></span></div><p id="modalDescription"></p></div></div>
+  <script src="./js/app.js?v=4"></script>
+</body>
 </html>
