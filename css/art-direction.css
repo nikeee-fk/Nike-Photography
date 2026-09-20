@@ -1,0 +1,28 @@
+/* Art direction: a quieter editorial type system, orbital home hero, and image reveal. */
+:root{--ink:#0b0b0b;--paper:#f4f4f0;--accent:#a88f72}
+body{letter-spacing:.01em}
+.brand,.main-nav,.eyebrow,.filter-button,.pause-button,.back-button,.works-note,.home-footer,.site-footer{font-family:"DM Mono",monospace}
+.home-view h1,.view h2,.work-card-title,.copy .lead{font-family:"Instrument Serif",Georgia,serif;font-weight:400;letter-spacing:-.035em}
+.home-view h1{font-size:clamp(68px,10vw,142px);line-height:.82;text-shadow:0 10px 40px rgba(0,0,0,.35)}
+.view h2{font-size:clamp(54px,8vw,112px);line-height:.9}
+.home-view{isolation:isolate;background:radial-gradient(circle at 72% 46%,rgba(145,119,91,.1),transparent 28%),var(--black)}
+.home-view:after{z-index:-2;opacity:.5}
+.home-inner{z-index:3}
+.planet{position:absolute;z-index:1;right:8vw;top:50%;width:clamp(230px,29vw,430px);aspect-ratio:1;border-radius:50%;transform:translateY(-50%);filter:drop-shadow(0 28px 45px rgba(0,0,0,.45));pointer-events:none}
+.planet-surface{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 34% 28%,#d6c2a7 0 3%,#a98f73 13%,#665747 39%,#292724 71%,#0b0b0b 100%);box-shadow:inset -35px -25px 55px rgba(0,0,0,.78),inset 12px 12px 22px rgba(255,240,205,.18);animation:planet-turn 18s linear infinite}
+.planet-surface:before{content:"";position:absolute;inset:9% -6%;border-radius:50%;background:repeating-linear-gradient(168deg,transparent 0 14px,rgba(229,211,181,.13) 15px 18px,transparent 19px 33px);mix-blend-mode:screen;animation:planet-texture 10s linear infinite}
+.planet-glow{position:absolute;inset:-13%;border-radius:50%;background:radial-gradient(circle,rgba(177,145,108,.2),transparent 63%);animation:glow-breathe 5s ease-in-out infinite}
+.planet-ring{position:absolute;inset:28% -19%;border:1px solid rgba(205,181,149,.45);border-radius:50%;transform:rotate(-18deg) scaleY(.28);box-shadow:0 0 18px rgba(205,181,149,.18);animation:ring-drift 12s ease-in-out infinite}
+.planet-ring:after{content:"";position:absolute;inset:-5px;border:1px solid rgba(244,244,240,.12);border-radius:50%}
+.action-button{backdrop-filter:blur(8px)}
+.photo-modal{transition:opacity .5s cubic-bezier(.2,.8,.2,1);backdrop-filter:blur(14px)}
+.modal-inner{transform:translateY(22px) scale(.96);opacity:0;transition:transform .65s cubic-bezier(.2,.8,.2,1),opacity .5s ease}
+.photo-modal.open .modal-inner{transform:none;opacity:1}
+.modal-inner img{opacity:0;transform:scale(1.035);transition:opacity .7s ease,transform .9s cubic-bezier(.2,.8,.2,1)}
+.modal-inner img.loaded{opacity:1;transform:none}
+@keyframes planet-turn{from{background-position:0 0}to{background-position:240px 0}}
+@keyframes planet-texture{from{transform:translateX(-18px)}to{transform:translateX(18px)}}
+@keyframes glow-breathe{0%,100%{transform:scale(.96);opacity:.7}50%{transform:scale(1.04);opacity:1}}
+@keyframes ring-drift{0%,100%{transform:rotate(-18deg) scaleY(.28) translateX(-4px)}50%{transform:rotate(-15deg) scaleY(.28) translateX(5px)}}
+@media(max-width:700px){.planet{right:-7vw;top:31%;width:clamp(210px,62vw,310px);opacity:.72}.home-view h1{font-size:clamp(62px,17vw,96px)}.home-inner{max-width:82vw}.planet-ring{inset:29% -15%}.modal-inner{width:94vw}}
+@media(prefers-reduced-motion:reduce){.planet-surface,.planet-surface:before,.planet-glow,.planet-ring{animation:none}.modal-inner,.modal-inner img{transition:none}}
