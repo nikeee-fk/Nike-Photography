@@ -66,7 +66,7 @@ function hydrateProjects() {
 
     return {
       ...project,
-      images: images.length ? images : []
+      images: images.length ? images.slice(0, 8) : []
     };
   });
 }
@@ -75,36 +75,53 @@ function findProjectForWork(work) {
   return state.projects.find((project) => project.category === work.category) || null;
 }
 
+function getNextProject(currentSlug) {
+  const list = state.projects.length ? state.projects : [];
+  if (!list.length) {
+    return {
+      slug: "mountain-studies",
+      title: "MOUNTAIN STUDIES",
+      location: "Nagano / Japan"
+    };
+  }
+  const currentIndex = list.findIndex((project) => project.slug === currentSlug);
+  const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % list.length : 0;
+  return list[nextIndex];
+}
+
 function renderProjectPage(projectSlug) {
   const project = getProjectBySlug(projectSlug) || state.projects[0];
   if (!project) return;
 
   const images = project.images && project.images.length ? project.images : [];
   const hero = images[0] || null;
-  const secondary = images.slice(1, 5);
+  const nextProject = getNextProject(project.slug);
+
+  const heroMarkup = hero
+    ? `<figure class="project-photo project-photo--hero" data-index="0"><img src="${escapeHtml(hero.src)}" alt="${escapeHtml(hero.title)}" loading="lazy" /></figure>`
+    : "";
+
+  const detailMarkup = images.slice(1, 5).map((image, index) => {
+    const variant = index % 2 === 0 ? "split" : "tall";
+    return `
+      <figure class="project-photo project-photo--${variant}" data-index="${index + 1}">
+        <img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.title)}" loading="lazy" />
+      </figure>
+    `;
+  }).join("");
+
+  const wideMarkup = images.slice(5, 8).map((image, index) => `
+    <figure class="project-photo project-photo--wide" data-index="${index + 5}">
+      <img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.title)}" loading="lazy" />
+    </figure>
+  `).join("");
+
   const meta = [
     { label: "Location", value: project.location },
     { label: "Year", value: project.year },
     { label: "Category", value: project.category },
     { label: "Medium", value: "Photography" }
   ];
-
-  const galleryMarkup = images.length
-    ? images.map((image, index) => {
-        const variant = index === 0 ? "hero" : index % 3 === 0 ? "wide" : index % 2 === 0 ? "tall" : "split";
-        return `
-          <figure class="project-photo project-photo--${variant}" data-index="${index}" data-project="${escapeHtml(project.slug)}">
-            <img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.title)}" loading="lazy" />
-          </figure>
-        `;
-      }).join("")
-    : `
-      <div class="project-empty-state">
-        <p>Currently no images are assigned to this project in the published data.</p>
-      </div>
-    `;
-
-  const nextProject = getNextProject(project.slug);
 
   projectView.innerHTML = `
     <div class="project-shell">
@@ -114,7 +131,7 @@ function renderProjectPage(projectSlug) {
           <div class="project-heading-wrap">
             <h2 class="project-heading">${escapeHtml(project.title)}</h2>
           </div>
-          <a class="project-back-link" href="#works">← ALL WORKS</a>
+          <a class="project-back-link" href="#works" aria-label="Back to works">← ALL WORKS</a>
         </div>
         <div class="project-meta-summary">
           <div>${escapeHtml(project.location)}</div>
@@ -127,7 +144,9 @@ function renderProjectPage(projectSlug) {
       </div>
 
       <div class="project-gallery">
-        ${galleryMarkup}
+        ${heroMarkup || ""}
+        ${detailMarkup || ""}
+        ${wideMarkup || ""}
       </div>
 
       <div class="project-info-block">
@@ -167,37 +186,16 @@ function renderProjectPage(projectSlug) {
       event.preventDefault();
       const targetFilter = state.lastFilter || "all";
       state.filter = targetFilter;
-      if (document.querySelector(`.filter-button[data-filter="${targetFilter}"]`)) {
-        document.querySelectorAll(".filter-button").forEach((button) => button.classList.toggle("active", button.dataset.filter === targetFilter));
-      }
+      document.querySelectorAll(".filter-button").forEach((button) => {
+        button.classList.toggle("active", button.dataset.filter === targetFilter);
+      });
       location.hash = "#works";
       showView("works");
     });
   }
 
-  const nextLink = projectView.querySelector(".project-next-link");
-  if (nextLink) {
-    nextLink.addEventListener("click", () => {
-      state.lastFilter = state.filter;
-    });
-  }
-
   state.currentProject = project;
   state.currentProjectImages = images;
-}
-
-function getNextProject(currentSlug) {
-  const list = state.projects.length ? state.projects : [];
-  if (!list.length) {
-    return {
-      slug: "mountain-studies",
-      title: "MOUNTAIN STUDIES",
-      location: "Nagano / Japan"
-    };
-  }
-  const currentIndex = list.findIndex((project) => project.slug === currentSlug);
-  const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % list.length : 0;
-  return list[nextIndex];
 }
 
 function showView(route) {
@@ -218,10 +216,6 @@ function showView(route) {
     const activeRoute = resolved === "project" ? "works" : resolved;
     link.classList.toggle("active", link.dataset.route === activeRoute);
   });
-
-  if (resolved === "works" && rowsRoot && state.works.length) {
-    renderWorks();
-  }
 
   if (resolved !== "project" && projectView) {
     projectView.innerHTML = "";
@@ -383,18 +377,17 @@ function updateProjectLightbox() {
   const project = state.projectLightbox ? getProjectBySlug(state.projectLightbox.slug) : null;
   if (!lightbox || !project || !project.images || !project.images.length) return;
 
-  const maxIndex = project.images.length - 1;
-  const nextIndex = ((state.projectLightboxIndex % project.images.length) + project.images.length) % project.images.length;
-  state.projectLightboxIndex = nextIndex;
+  if (state.projectLightboxIndex < 0) state.projectLightboxIndex = project.images.length - 1;
+  if (state.projectLightboxIndex >= project.images.length) state.projectLightboxIndex = 0;
 
-  const image = project.images[nextIndex];
+  const image = project.images[state.projectLightboxIndex];
   const imageEl = lightbox.querySelector(".project-lightbox-image");
   const countEl = lightbox.querySelector(".project-lightbox-counter");
   const captionEl = lightbox.querySelector(".project-lightbox-caption");
 
   imageEl.src = image.src;
   imageEl.alt = image.title;
-  countEl.textContent = `${nextIndex + 1} / ${project.images.length}`;
+  countEl.textContent = `${state.projectLightboxIndex + 1} / ${project.images.length}`;
   captionEl.textContent = `${image.title} / ${image.location} / ${image.year}`;
 }
 
@@ -520,7 +513,7 @@ async function loadWorks() {
     state.works = await response.json();
     hydrateProjects();
     renderWorks();
-    if (state.projects.length && location.hash.startsWith("#project/")) {
+    if (location.hash.startsWith("#project/")) {
       const slug = location.hash.slice(9);
       renderProjectPage(slug);
     }
