@@ -13,6 +13,7 @@
     <nav class="main-nav" aria-label="メインナビゲーション">
       <a href="#author" data-route="author">作者について</a>
       <a href="#works" data-route="works">作品について</a>
+      <a href="#contact" data-route="contact">お問い合わせ</a>
     </nav>
     <button class="menu-button" id="menuButton" aria-label="メニュー">MENU</button>
   </header>
@@ -20,6 +21,7 @@
   <div class="mobile-menu" id="mobileMenu">
     <a href="#author" data-route="author">作者について</a>
     <a href="#works" data-route="works">作品について</a>
+    <a href="#contact" data-route="contact">お問い合わせ</a>
   </div>
 
   <main>
@@ -42,14 +44,27 @@
         <h2>作者について</h2>
       </div>
       <div class="author-layout">
-        <div class="portrait-placeholder">PORTRAIT<br /><span>画像を差し替えてください</span></div>
+        <div class="portrait-placeholder">
+          <div class="author-typography">
+            <div class="author-name">NIKE</div>
+            <div class="author-titles">
+              <div>PHOTOGRAPHER</div>
+              <div>/</div>
+              <div>VISUAL DESIGNER</div>
+            </div>
+            <div class="author-brief">Based in China<br/>Working across places, light and time.</div>
+          </div>
+        </div>
         <div class="author-copy">
-          <p class="lead-copy">ニック。風景の中にある光、空気、そして時間の変化を撮影しています。</p>
-          <p>[ここにプロフィールを入力してください。撮影を始めたきっかけ、活動地域、作品に対する考え方などを自由に追加できます。]</p>
+          <p class="lead-copy">I photograph places as I encounter them — through changing light, weather, distance, and time.</p>
+          <p>My practice began with landscape photography and gradually expanded through travel and everyday observation. I am interested in the quiet moments between people and places, and in how a familiar landscape changes when seen from somewhere else.</p>
+
           <dl class="author-details">
-            <div><dt>活動拠点</dt><dd>[都市 / 国]</dd></div>
-            <div><dt>分野</dt><dd>風景写真 / 旅行写真</dd></div>
-            <div><dt>連絡先</dt><dd>[メールアドレス]</dd></div>
+            <div><dt>Based in</dt><dd>China / Anywhere</dd></div>
+            <div><dt>Practice</dt><dd>Photography / Visual Design</dd></div>
+            <div><dt>Focus</dt><dd>Landscape / Travel / Everyday Places</dd></div>
+            <div><dt>Archive</dt><dd>2023—2026</dd></div>
+            <div><dt>Email</dt><dd>[メールアドレス]</dd></div>
           </dl>
         </div>
       </div>
@@ -85,6 +100,29 @@
       </div>
       <p class="swipe-note">5列の作品を2秒ごとに自動で切り替えています。ドラッグでも移動できます。</p>
     </section>
+
+    <section class="page-view contact-view" data-view="contact" hidden>
+      <div class="page-heading">
+        <p class="eyebrow">03 / Contact</p>
+        <h2>Let's connect.</h2>
+      </div>
+      <div class="contact-layout">
+        <div class="contact-copy">
+          <p>For commissions, collaborations, or print inquiries, please get in touch.</p>
+          <p class="contact-email">[メールアドレス]</p>
+        </div>
+        <aside class="contact-info">
+          <h3 class="small-eyebrow">OPEN TO</h3>
+          <ul>
+            <li>Editorial</li>
+            <li>Photography</li>
+            <li>Visual Design</li>
+            <li>Creative Collaboration</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
   </main>
 
   <footer class="site-footer"><span>© 2026 NICK</span><span>Landscape Photography</span></footer>
