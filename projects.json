@@ -1,0 +1,38 @@
+[
+  {
+    "id": "mountain-studies",
+    "slug": "mountain-studies",
+    "title": "MOUNTAIN STUDIES",
+    "location": "Nagano / Japan",
+    "year": "2026",
+    "category": "mountain",
+    "description": "A study of altitude, weather, distance, and the quiet presence of mountains."
+  },
+  {
+    "id": "coastal-silence",
+    "slug": "coastal-silence",
+    "title": "COASTAL SILENCE",
+    "location": "Okinawa / Japan",
+    "year": "2025",
+    "category": "ocean",
+    "description": "An exploration of coastlines, shifting light, and the quiet spaces between land and sea."
+  },
+  {
+    "id": "forest-fragments",
+    "slug": "forest-fragments",
+    "title": "FOREST FRAGMENTS",
+    "location": "Kyoto / Japan",
+    "year": "2024",
+    "category": "forest",
+    "description": "Fragments of trees, shadows, and changing seasons, observed through moments of stillness."
+  },
+  {
+    "id": "urban-silence",
+    "slug": "urban-silence",
+    "title": "URBAN SILENCE",
+    "location": "Tokyo / Japan",
+    "year": "2023",
+    "category": "urban",
+    "description": "Quiet observations of urban spaces, everyday architecture, and fleeting moments in the city."
+  }
+]
