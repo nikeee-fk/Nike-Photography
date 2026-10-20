@@ -1,570 +1,431 @@
- :root {
-  --black: #0b0b0b;
-  --white: #f5f5f2;
-  --gray: #888883;
-  --line: rgba(245, 245, 242, .22);
-  --page: clamp(20px, 4vw, 64px);
-  --soft: #d8d6d0;
-  --panel: #eceae5;
-  --muted: #6d6d68;
+const state = {
+  works: [],
+  filtered: [],
+  rowPositions: [],
+  paused: false,
+  filter: "all",
+  autoTimer: null,
+  animationFrame: null,
+  lastFrame: 0,
+  rowOffsets: [],
+  activeProjectId: null
+};
+
+const views = document.querySelectorAll("[data-view]");
+const routeLinks = document.querySelectorAll("[data-route]");
+const rowsRoot = document.getElementById("worksRows");
+const carousel = document.getElementById("carousel");
+const counter = document.getElementById("worksCounter");
+const pauseButton = document.getElementById("pauseButton");
+const previousButton = document.getElementById("previousButton");
+const nextButton = document.getElementById("nextButton");
+const mobileMenu = document.getElementById("mobileMenu");
+const menuButton = document.getElementById("menuButton");
+const projectView = document.querySelector('[data-view="project"]');
+const projectTitle = document.getElementById("projectTitle");
+const projectLocation = document.getElementById("projectLocation");
+const projectYear = document.getElementById("projectYear");
+const projectCategory = document.getElementById("projectCategory");
+const projectIntro = document.getElementById("projectIntro");
+const projectGallery = document.getElementById("projectGallery");
+const projectKicker = document.getElementById("projectKicker");
+const projectBackLink = document.getElementById("projectBackLink");
+const projectNextLink = document.querySelector(".project-next-link");
+const projectInfoLocation = document.getElementById("projectInfoLocation");
+const projectInfoSeason = document.getElementById("projectInfoSeason");
+const projectInfoFormat = document.getElementById("projectInfoFormat");
+const projectInfoArchive = document.getElementById("projectInfoArchive");
+const projectNextTitle = document.getElementById("projectNextTitle");
+const projectNextLocation = document.getElementById("projectNextLocation");
+
+const ROW_COUNT = 5;
+const SPEED = 22;
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  margin: 0;
-  background: var(--black);
-  color: var(--white);
-  font-family: Arial, "Helvetica Neue", "Noto Sans JP", sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-body.menu-open, body.modal-open { overflow: hidden; }
-a { color: inherit; text-decoration: none; }
-button { color: inherit; font: inherit; cursor: pointer; }
-
-.site-header {
-  position: fixed;
-  inset: 0 0 auto;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 26px var(--page);
-  mix-blend-mode: difference;
-}
-.logo { font-size: 12px; font-weight: 700; letter-spacing: .22em; }
-.main-nav { display: flex; gap: 32px; font-size: 11px; letter-spacing: .12em; }
-.main-nav a { opacity: .65; transition: opacity .25s; }
-.main-nav a:hover, .main-nav a.active { opacity: 1; }
-.menu-button { display: none; border: 0; background: transparent; font-size: 10px; letter-spacing: .15em; }
-.mobile-menu { display: none; }
-
-.page-view { min-height: 100vh; padding: 150px var(--page) 100px; }
-.home-view { position: relative; display: flex; align-items: center; overflow: hidden; background: var(--black); }
-.home-view::after { position: absolute; right: 5vw; bottom: -14vw; width: 52vw; height: 52vw; border: 1px solid rgba(245,245,242,.17); border-radius: 50%; content: ""; }
-.home-content { position: relative; z-index: 1; }
-.eyebrow { margin: 0 0 24px; color: var(--gray); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; }
-h1, h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-weight: 400; letter-spacing: -.08em; }
-h1 { font-size: clamp(86px, 18vw, 260px); line-height: .78; }
-.home-subtitle { margin: 38px 0 0; color: #aaa9a4; font-size: 15px; letter-spacing: .04em; }
-.home-actions { display: flex; gap: 10px; margin-top: 56px; }
-.route-button { display: inline-flex; min-width: 142px; justify-content: center; padding: 14px 20px; border: 1px solid var(--white); font-size: 11px; letter-spacing: .12em; transition: background .25s ease, color .25s ease; }
-.route-button-dark { background: var(--white); color: var(--black); }
-.route-button-light:hover { background: var(--white); color: var(--black); }
-.home-index { position: absolute; right: var(--page); bottom: 32px; color: var(--gray); font-size: 10px; letter-spacing: .16em; }
-
-.author-view, .works-view, .project-view, .contact-view { background: var(--white); color: var(--black); }
-.author-view { background: var(--white); color: var(--black); }
-.author-shell {
-  max-width: 1180px;
-  margin: 0 auto;
-  display: grid;
-  gap: clamp(24px, 4vw, 54px);
-}
-.author-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  gap: 20px;
-}
-.author-mark {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(52px, 8vw, 120px);
-  line-height: .9;
-  letter-spacing: -.08em;
-}
-.author-body {
-  display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.7fr);
-  gap: clamp(28px, 5vw, 90px);
-  align-items: start;
-}
-.author-story-column { display: grid; gap: 28px; }
-.author-identity {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  color: #5c5c5a;
-  font-size: 10px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-}
-.author-divider { color: #8a8a87; }
-.author-plate {
-  width: min(100%, 520px);
-  min-height: 180px;
-  border: 1px solid rgba(17,17,17,.18);
-  background: linear-gradient(135deg, rgba(17,17,17,0.06), rgba(17,17,17,0.02));
-  display: grid;
-  place-items: center;
-  text-transform: uppercase;
-  letter-spacing: .18em;
-  font-size: 10px;
-  color: #6d6d68;
-}
-.author-lead {
-  max-width: 700px;
-  margin: 0;
-  font-size: clamp(28px, 4vw, 52px);
-  line-height: 1.2;
-  letter-spacing: -.04em;
-}
-.author-info-panel {
-  display: grid;
-  gap: 24px;
-  padding-left: clamp(18px, 2vw, 32px);
-  border-left: 1px solid rgba(17,17,17,.18);
-}
-.author-statement {
-  margin: 0;
-  color: #4f4f4d;
-  font-size: 15px;
-  line-height: 1.9;
-}
-.author-details {
-  margin: 0;
-  border-top: 1px solid rgba(17,17,17,.18);
-}
-.author-details div {
-  display: grid;
-  grid-template-columns: 110px 1fr;
-  gap: 18px;
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(17,17,17,.18);
-}
-dt {
-  color: #888;
-  font-size: 11px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-}
-dd {
-  margin: 0;
-  color: #1b1b1a;
-  font-size: 14px;
-  line-height: 1.6;
+function getPlaceTokensFromFilename(image) {
+  if (!image) return [];
+  const fileName = String(image).split('/').pop() || '';
+  const base = fileName.replace(/\.[^/.]+$/, '');
+  const latin = base.match(/[a-zA-Z\u00C0-\u024F]+/g);
+  if (latin && latin.length) return latin.map((token) => token.toLowerCase());
+  const cjk = base.match(/[\u4E00-\u9FFF\u3040-\u30FF\u3000-\u303F]+/g);
+  if (cjk) return cjk;
+  return [];
 }
 
-.page-heading { max-width: 1100px; margin: 0 auto 70px; }
-.page-heading .eyebrow { color: #777; }
-h2 { font-size: clamp(58px, 11vw, 150px); line-height: .85; }
-
-.works-view {
-  background: #f4f1ee;
-  color: var(--black);
-  padding-left: 0;
-  padding-right: 0;
-  overflow: hidden;
-}
-.works-shell {
-  max-width: 1440px;
-  margin: 0 auto;
-  padding-bottom: 40px;
-}
-.works-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  gap: 32px;
-  max-width: 1320px;
-  margin-bottom: 32px;
-}
-.works-heading-copy { flex: 1; }
-.heading-note {
-  max-width: 320px;
-  color: #666;
-  font-size: 12px;
-  line-height: 1.7;
-  margin: 0;
-  text-align: right;
-}
-.works-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1320px;
-  margin: 0 auto 14px;
-  padding: 0 var(--page) 18px;
-  border-bottom: 1px solid rgba(17,17,17,.16);
-}
-.filters { display: flex; gap: 22px; flex-wrap: wrap; }
-.filter-button, .pause-button {
-  border: 0;
-  border-bottom: 1px solid transparent;
-  background: transparent;
-  color: #7a7a77;
-  font-size: 10px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  padding: 0 0 8px;
-}
-.filter-button.active, .filter-button:hover, .pause-button:hover {
-  border-bottom-color: var(--black);
-  color: var(--black);
-}
-.pause-button { color: #555; }
-.carousel {
-  overflow: hidden;
-  padding: 20px 0 18px;
-  cursor: grab;
-  touch-action: pan-y;
-}
-.carousel.dragging { cursor: grabbing; }
-.works-rows { display: grid; gap: 18px; }
-.carousel-row {
-  overflow: hidden;
-  padding: 0 var(--page);
-}
-.carousel-row-track {
-  display: flex;
-  width: max-content;
-  gap: 18px;
-  will-change: transform;
-}
-.work-card {
-  position: relative;
-  flex: 0 0 clamp(150px, 14vw, 240px);
-  min-width: 150px;
-  height: clamp(180px, 18vw, 260px);
-  overflow: hidden;
-  background: #d7d3cf;
-  cursor: pointer;
-  border: 1px solid rgba(17,17,17,.08);
-}
-.work-card img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: grayscale(100%) contrast(1.02);
-  transition: transform .45s ease, filter .35s ease, opacity .35s ease;
-}
-.work-card:hover img { transform: scale(1.05); filter: grayscale(80%) contrast(1.08); }
-.work-card-info {
-  position: absolute;
-  inset: auto 0 0;
-  padding: 48px 14px 12px;
-  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.78) 62%);
-  color: white;
-  opacity: 0;
-  transition: opacity .32s ease;
-  pointer-events: none;
-}
-.work-card:hover .work-card-info { opacity: 1; }
-.work-card-title {
-  margin: 0 0 6px;
-  font-family: Georgia, serif;
-  font-size: 16px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.work-card-description {
-  max-width: 330px;
-  margin: 0 0 9px;
-  font-size: 10px;
-  line-height: 1.5;
-  color: #ddd;
-}
-.work-card-meta {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  color: #bbb;
-  font-size: 8px;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-.work-card--feature { flex-basis: min(32vw, 420px); height: clamp(260px, 28vw, 430px); }
-.work-card--wide { flex-basis: min(26vw, 330px); height: clamp(220px, 20vw, 320px); }
-.work-card--portrait { flex-basis: clamp(160px, 15vw, 210px); height: clamp(240px, 25vw, 360px); }
-.work-card--compact { flex-basis: clamp(140px, 12vw, 180px); height: clamp(160px, 16vw, 220px); }
-.carousel-controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  padding-top: 10px;
-}
-.carousel-controls button {
-  border: 0;
-  background: transparent;
-  color: var(--black);
-  font-size: 24px;
-}
-#worksCounter {
-  color: #777;
-  font-size: 10px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
-.swipe-note {
-  margin: 18px auto 0;
-  color: #7a7a75;
-  font-size: 10px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  text-align: center;
-  max-width: 1320px;
-  padding: 0 var(--page);
+function extractPlacesFromFilenamesByCategory() {
+  const map = { all: [] };
+  state.works.forEach((work) => {
+    if (!work) return;
+    const tokens = getPlaceTokensFromFilename(work.image);
+    work._placeTokens = tokens;
+    tokens.forEach((token) => {
+      if (!map.all.includes(token)) map.all.push(token);
+      const category = work.category || 'uncategorized';
+      if (!map[category]) map[category] = [];
+      if (!map[category].includes(token)) map[category].push(token);
+    });
+  });
+  return map;
 }
 
-.project-view {
-  background: var(--white);
-  color: var(--black);
-  min-height: 100vh;
-  padding-top: 150px;
-}
-.project-shell {
-  max-width: 1180px;
-  margin: 0 auto;
-}
-.project-header {
-  margin-bottom: clamp(28px, 4vw, 60px);
-}
-.project-heading-kicker {
-  margin-bottom: 18px;
-  color: var(--muted);
-  font-size: 10px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-}
-.project-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  gap: 24px;
-}
-.project-heading {
-  max-width: 760px;
-  font-size: clamp(54px, 8vw, 120px);
-  letter-spacing: -.06em;
-}
-.project-back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 10px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: #5a5a59;
-  transition: transform .25s ease, opacity .25s ease;
-  background: transparent;
-  border: 0;
-}
-.project-back-link:hover { transform: translateX(-4px); }
-.project-meta-summary {
-  display: flex;
-  gap: 28px;
-  margin-top: 18px;
-  color: #444;
-  font-size: 11px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-}
-.project-intro {
-  max-width: 620px;
-  margin: 0 0 54px;
-  color: #3f3f3d;
-  font-size: clamp(18px, 2vw, 26px);
-  line-height: 1.5;
-  font-family: Georgia, "Times New Roman", serif;
-}
-.project-gallery {
-  display: grid;
-  grid-template-columns: 1.35fr 1fr 1fr;
-  gap: 18px;
-  margin-bottom: 80px;
-}
-.project-photo {
-  position: relative;
-  overflow: hidden;
-  background: var(--soft);
-  cursor: pointer;
-  min-height: 220px;
-  transition: transform .3s ease;
-}
-.project-photo:hover { transform: translateY(-2px); }
-.project-photo img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: grayscale(100%);
-  transition: transform .5s ease, filter .4s ease, opacity .4s ease;
-}
-.project-photo:hover img { transform: scale(1.02); filter: grayscale(80%); }
-.project-photo--hero { grid-column: 1 / span 2; min-height: 620px; }
-.project-photo--wide { grid-column: 1 / span 2; min-height: 420px; }
-.project-photo--tall { min-height: 520px; }
-.project-photo--split { min-height: 360px; }
+function updateFilterButtonLabels() {
+  const placesMap = extractPlacesFromFilenamesByCategory();
 
-.project-info-block {
-  margin: 90px 0 60px;
-  padding-top: 18px;
-  border-top: 1px solid #d4d1cc;
-}
-.project-info-title {
-  margin-bottom: 22px;
-  font-size: 10px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.project-info-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 42px;
-}
-.project-info-row {
-  display: grid;
-  grid-template-columns: minmax(120px, 180px) 1fr;
-  gap: 18px;
-  padding: 14px 0;
-  border-bottom: 1px solid #d2d0cc;
-  font-size: 11px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
-.project-info-row span { color: var(--muted); }
-.project-info-row strong {
-  color: var(--black);
-  letter-spacing: .08em;
-  text-transform: none;
-  font-size: 15px;
-  font-weight: 400;
+  document.querySelectorAll('.filter-button').forEach((button) => {
+    const filter = button.dataset.filter || 'all';
+
+    if (filter === 'all') {
+      const tokens = placesMap.all ? placesMap.all.slice(0, 3) : [];
+      if (tokens.length) {
+        button.textContent = `ALL — ${tokens.map((token) => String(token).toUpperCase()).join(', ')}`;
+        button.removeAttribute('data-place');
+      } else {
+        button.textContent = 'ALL';
+        button.removeAttribute('data-place');
+      }
+      return;
+    }
+
+    const tokens = placesMap[filter] || [];
+    if (tokens.length) {
+      button.textContent = String(tokens[0]).toUpperCase();
+      button.dataset.place = tokens[0];
+    } else {
+      const original = button.dataset.originalLabel || button.textContent || filter.toUpperCase();
+      button.textContent = original;
+      button.removeAttribute('data-place');
+    }
+  });
 }
 
-.project-next {
-  margin-top: 90px;
-  padding-top: 18px;
-  border-top: 1px solid #d4d1cc;
-}
-.project-next-label {
-  margin-bottom: 18px;
-  color: var(--muted);
-  font-size: 10px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-}
-.project-next-link {
-  display: block;
-  transition: transform .25s ease, opacity .25s ease;
-}
-.project-next-link:hover { transform: translateY(-2px); }
-.project-next-title {
-  display: block;
-  font-size: clamp(28px, 4vw, 58px);
-  font-family: Georgia, "Times New Roman", serif;
-  letter-spacing: -.04em;
-}
-.project-next-location {
-  display: block;
-  margin-top: 8px;
-  color: var(--muted);
-  font-size: 10px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-}
-.project-next-arrow {
-  display: inline-block;
-  margin-top: 8px;
-  font-size: 28px;
+function showView(route) {
+  const target = ["home", "author", "works", "contact", "project"].includes(route) ? route : "home";
+  views.forEach((view) => {
+    view.hidden = view.dataset.view !== target;
+  });
+  routeLinks.forEach((link) => {
+    const isActive = link.dataset.route === target;
+    link.classList.toggle("active", isActive);
+  });
+  mobileMenu.classList.remove("open");
+  document.body.classList.remove("menu-open");
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-.contact-view {
-  background: var(--white);
-  color: var(--black);
-}
-.contact-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(200px, 0.7fr);
-  gap: clamp(26px, 5vw, 90px);
-  max-width: 1100px;
-  margin: 0 auto;
-}
-.contact-copy {
-  color: #4d4d4b;
-  font-size: 18px;
-  line-height: 1.7;
-}
-.contact-email {
-  margin-top: 28px;
-  font-size: clamp(28px, 4vw, 52px);
-  font-family: Georgia, "Times New Roman", serif;
-  letter-spacing: -.03em;
-  color: var(--black);
-}
-.contact-info {
-  border-left: 1px solid rgba(17,17,17,.18);
-  padding-left: 24px;
-}
-.small-eyebrow {
-  margin: 0 0 18px;
-  color: var(--muted);
-  font-size: 10px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-}
-.contact-info ul {
-  margin: 0;
-  padding-left: 18px;
-  color: #4a4a49;
-  line-height: 2;
+function distributeIntoRows(items) {
+  const rows = Array.from({ length: ROW_COUNT }, () => []);
+  items.forEach((item, index) => rows[index % ROW_COUNT].push(item));
+  return rows;
 }
 
-.site-footer {
-  display: flex;
-  justify-content: space-between;
-  padding: 24px var(--page);
-  border-top: 1px solid var(--line);
-  color: #888;
-  font-size: 10px;
-  letter-spacing: .13em;
-  text-transform: uppercase;
-  background: var(--black);
+function renderWorks() {
+  if (typeof state.filter === 'string' && state.filter.startsWith('place:')) {
+    const token = state.filter.slice(6);
+    state.filtered = state.works.filter((work) => Array.isArray(work._placeTokens) && work._placeTokens.includes(token));
+  } else if (state.filter === 'all') {
+    state.filtered = state.works;
+  } else {
+    state.filtered = state.works.filter((work) => work.category === state.filter);
+  }
+
+  const rows = distributeIntoRows(state.filtered);
+  state.rowOffsets = rows.map(() => 0);
+
+  rowsRoot.innerHTML = rows.map((row, rowIndex) => {
+    const repeated = [...row, ...row];
+    return `
+      <div class="carousel-row" data-row="${rowIndex}">
+        <div class="carousel-row-track">
+          ${repeated.map((work) => `
+            <article class="work-card work-card--${work.category === 'mountain' ? 'feature' : work.category === 'ocean' ? 'wide' : work.category === 'forest' ? 'portrait' : 'compact'}" data-id="${escapeHtml(work.id)}">
+              <img src="${escapeHtml(work.image)}" alt="${escapeHtml(work.title)}" loading="lazy" />
+              <div class="work-card-info">
+                <h3 class="work-card-title">${escapeHtml(work.title)}</h3>
+                <p class="work-card-description">${escapeHtml(work.description)}</p>
+                <div class="work-card-meta"><span>${escapeHtml(work.location)}</span><span>${escapeHtml(work.year)}</span><span>${escapeHtml(work.categoryLabel)}</span></div>
+              </div>
+            </article>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  rowsRoot.querySelectorAll('.work-card').forEach((card) => {
+    card.addEventListener('click', () => openProject(card.dataset.id));
+  });
+
+  updateFilterButtonLabels();
+  updateCounter();
 }
 
-.photo-modal { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: clamp(28px, 7vw, 96px); background: rgba(8, 8, 8, .94); opacity: 0; pointer-events: none; transition: opacity .25s ease; }
-.photo-modal.open { opacity: 1; pointer-events: auto; }
-.photo-modal-inner { position: relative; width: min(78vw, 1040px); max-height: 82vh; padding: 22px; background: #151515; }
-.photo-modal-image { display: block; width: 100%; height: min(72vh, 720px); object-fit: contain; background: #090909; }
-.photo-modal-close { position: absolute; top: -44px; right: 0; border: 0; background: transparent; color: white; font-size: 28px; line-height: 1; }
-.photo-modal-caption { display: flex; justify-content: space-between; gap: 20px; padding-top: 12px; color: #aaa; font-size: 10px; letter-spacing: .1em; }
-.photo-modal-description { margin-top: 8px; color: #c7c7c3; font-size: 12px; line-height: 1.6; }
+function getRowLoopWidth(row) {
+  const track = row.querySelector('.carousel-row-track');
+  const cards = track?.querySelectorAll('.work-card');
+  if (!track || !cards?.length) return 0;
+  return track.scrollWidth / 2;
+}
 
-[hidden] { display: none !important; }
+function animateRows(timestamp) {
+  if (!state.lastFrame) state.lastFrame = timestamp;
+  const elapsed = Math.min(timestamp - state.lastFrame, 64);
+  state.lastFrame = timestamp;
 
-@media (max-width: 700px) {
-  .main-nav { display: none; }
-  .menu-button { display: block; }
-  .mobile-menu { position: fixed; inset: 0; z-index: 10; flex-direction: column; justify-content: center; gap: 24px; padding: var(--page); background: var(--black); }
-  .mobile-menu.open { display: flex; }
-  .mobile-menu a { font-family: Georgia, serif; font-size: 42px; }
-  .home-actions { flex-direction: column; width: 190px; }
-  .author-header { display: grid; gap: 18px; }
-  .author-body { grid-template-columns: 1fr; }
-  .author-info-panel { border-left: 0; border-top: 1px solid rgba(17,17,17,.18); padding-left: 0; padding-top: 16px; }
-  .author-identity { flex-wrap: wrap; gap: 8px 18px; }
-  .author-plate { min-height: 140px; }
-  .works-heading { display: block; }
-  .heading-note { margin-top: 28px; }
-  .works-toolbar { align-items: flex-start; flex-direction: column; gap: 20px; }
-  .carousel-row { padding: 0 18px; }
-  .carousel-row-track { gap: 10px; }
-  .work-card { flex-basis: calc((100vw - (2 * var(--page)) - (4 * 10px)) / 5); min-width: 72px; }
-  .work-card img { height: 110px; }
-  .work-card-info { opacity: 1; }
-  .project-header-row { display: block; }
-  .project-back-link { margin-top: 18px; }
-  .project-gallery { grid-template-columns: 1fr; }
-  .project-photo--hero, .project-photo--wide { grid-column: auto; min-height: 300px; }
-  .project-photo--tall, .project-photo--split { min-height: 280px; }
-  .project-info-grid { grid-template-columns: 1fr; }
-  .contact-layout { grid-template-columns: 1fr; }
-  .contact-info { border-left: none; border-top: 1px solid rgba(17,17,17,.18); padding-left: 0; padding-top: 16px; }
-  .photo-modal { padding: 26px; }
-  .photo-modal-inner { width: 92vw; padding: 12px; }
-  .photo-modal-image { height: 66vh; }
-  .site-footer { align-items: flex-start; flex-direction: column; gap: 10px; }
+  if (!state.paused && !document.hidden) {
+    rowsRoot.querySelectorAll('.carousel-row').forEach((row, index) => {
+      const loopWidth = getRowLoopWidth(row);
+      if (!loopWidth) return;
+      const direction = index % 2 === 0 ? 1 : -1;
+      state.rowOffsets[index] = (state.rowOffsets[index] + direction * SPEED * elapsed / 1000) % loopWidth;
+      if (state.rowOffsets[index] < 0) state.rowOffsets[index] += loopWidth;
+      row.querySelector('.carousel-row-track').style.transform = `translate3d(${-state.rowOffsets[index]}px, 0, 0)`;
+    });
+  }
+  state.animationFrame = requestAnimationFrame(animateRows);
+}
+
+function updateCounter() {
+  const total = state.filtered.length;
+  counter.textContent = `${total ? '01' : '00'} / ${String(total).padStart(2, '0')}`;
+}
+
+function nudgeRows(direction) {
+  rowsRoot.querySelectorAll('.carousel-row').forEach((row, index) => {
+    const cards = row.querySelectorAll('.work-card');
+    if (!cards.length) return;
+    const amount = cards[0].getBoundingClientRect().width + 14;
+    const loopWidth = getRowLoopWidth(row);
+    state.rowOffsets[index] = (state.rowOffsets[index] + direction * amount + loopWidth) % loopWidth;
+    row.querySelector('.carousel-row-track').style.transform = `translate3d(${-state.rowOffsets[index]}px, 0, 0)`;
+  });
+}
+
+function buildProjectGallery(work) {
+  const galleryItems = [
+    { className: 'project-photo project-photo--hero' },
+    { className: 'project-photo project-photo--tall' },
+    { className: 'project-photo project-photo--split' },
+    { className: 'project-photo project-photo--wide' }
+  ];
+
+  projectGallery.innerHTML = galleryItems.map((item, index) => `
+    <figure class="${item.className}">
+      <img src="${escapeHtml(work.image)}" alt="${escapeHtml(work.title)}" loading="lazy" />
+    </figure>
+  `).join('');
+}
+
+function openProject(id) {
+  const work = state.filtered.find((item) => item.id === id) || state.works.find((item) => item.id === id);
+  if (!work) return;
+
+  const projectItems = state.filtered.length ? state.filtered : state.works;
+  const currentIndex = projectItems.findIndex((item) => item.id === work.id);
+  const next = projectItems[(currentIndex + 1) % projectItems.length] || work;
+
+  state.activeProjectId = work.id;
+  projectTitle.textContent = work.title;
+  projectLocation.textContent = work.location;
+  projectYear.textContent = work.year;
+  projectCategory.textContent = work.categoryLabel;
+  projectKicker.textContent = `Project / ${work.year}`;
+  projectIntro.textContent = work.description;
+  projectInfoLocation.textContent = work.location;
+  projectInfoSeason.textContent = work.categoryLabel;
+  projectInfoFormat.textContent = 'Digital';
+  projectInfoArchive.textContent = work.year;
+  projectNextTitle.textContent = next.title;
+  projectNextLocation.textContent = `${next.location} / ${next.year}`;
+  projectNextLink.dataset.projectId = next.id;
+  projectNextLink.href = '#project';
+
+  buildProjectGallery(work);
+  showView('project');
+  location.hash = 'project';
+}
+
+function openPhoto(id) {
+  const work = state.filtered.find((item) => item.id === id) || state.works.find((item) => item.id === id);
+  if (!work) return;
+  const modal = document.getElementById('photoModal') || createPhotoModal();
+  modal.querySelector('.photo-modal-image').src = work.image;
+  modal.querySelector('.photo-modal-image').alt = work.title;
+  modal.querySelector('.photo-modal-title').textContent = `${work.title} / ${work.location} / ${work.year}`;
+  modal.querySelector('.photo-modal-description').textContent = work.description;
+  modal.classList.add('open');
+  document.body.classList.add('modal-open');
+}
+
+function createPhotoModal() {
+  const modal = document.createElement('div');
+  modal.id = 'photoModal';
+  modal.className = 'photo-modal';
+  modal.innerHTML = `
+    <div class="photo-modal-inner" role="dialog" aria-modal="true" aria-label="作品の拡大表示">
+      <button class="photo-modal-close" type="button" aria-label="閉じる">×</button>
+      <img class="photo-modal-image" src="" alt="" />
+      <div class="photo-modal-caption"><strong class="photo-modal-title"></strong><span>クリックまたはESCで閉じる</span></div>
+      <p class="photo-modal-description"></p>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal || event.target.closest('.photo-modal-close')) closePhotoModal();
+  });
+  return modal;
+}
+
+function closePhotoModal() {
+  const modal = document.getElementById('photoModal');
+  modal?.classList.remove('open');
+  document.body.classList.remove('modal-open');
+}
+
+routeLinks.forEach((link) => {
+  link.addEventListener('click', () => {
+    const route = link.dataset.route;
+    if (route === 'works' || route === 'author' || route === 'contact' || route === 'home') {
+      showView(route);
+      location.hash = route === 'home' ? '' : route;
+    }
+  });
+});
+
+window.addEventListener('hashchange', () => {
+  const hash = location.hash.slice(1);
+  if (hash === 'project') {
+    const id = state.activeProjectId || state.filtered[0]?.id || state.works[0]?.id;
+    if (id) openProject(id);
+    return;
+  }
+  showView(hash || 'home');
+});
+
+document.querySelectorAll('.filter-button').forEach((button) => {
+  if (!button.dataset.originalLabel) button.dataset.originalLabel = button.textContent.trim();
+  button.addEventListener('click', () => {
+    document.querySelectorAll('.filter-button').forEach((item) => item.classList.remove('active'));
+    button.classList.add('active');
+
+    if (button.dataset.place) {
+      state.filter = `place:${button.dataset.place}`;
+    } else {
+      state.filter = button.dataset.filter;
+    }
+
+    renderWorks();
+    if (state.filtered.length) {
+      state.activeProjectId = state.filtered[0].id;
+    }
+  });
+});
+
+pauseButton.addEventListener('click', () => {
+  state.paused = !state.paused;
+  pauseButton.textContent = state.paused ? '自動再生を開始' : '自動再生を停止';
+});
+previousButton.addEventListener('click', () => nudgeRows(-1));
+nextButton.addEventListener('click', () => nudgeRows(1));
+window.addEventListener('resize', () => { state.lastFrame = 0; });
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    if (document.getElementById('photoModal')?.classList.contains('open')) {
+      closePhotoModal();
+      return;
+    }
+    if (!projectView.hidden) {
+      showView('works');
+      location.hash = '#works';
+    }
+  }
+});
+
+menuButton.addEventListener('click', () => {
+  mobileMenu.classList.toggle('open');
+  document.body.classList.toggle('menu-open');
+});
+
+let dragStart = null;
+carousel.addEventListener('pointerdown', (event) => {
+  dragStart = event.clientX;
+  carousel.classList.add('dragging');
+  carousel.setPointerCapture(event.pointerId);
+});
+carousel.addEventListener('pointerup', (event) => {
+  if (dragStart !== null && Math.abs(event.clientX - dragStart) > 35) nudgeRows(event.clientX < dragStart ? 1 : -1);
+  dragStart = null;
+  carousel.classList.remove('dragging');
+});
+carousel.addEventListener('pointercancel', () => {
+  dragStart = null;
+  carousel.classList.remove('dragging');
+});
+
+projectBackLink.addEventListener('click', () => {
+  showView('works');
+  location.hash = '#works';
+});
+
+if (projectNextLink) {
+  projectNextLink.addEventListener('click', (event) => {
+    const nextId = projectNextLink.dataset.projectId;
+    if (!nextId) {
+      event.preventDefault();
+      showView('works');
+      location.hash = '#works';
+      return;
+    }
+    event.preventDefault();
+    openProject(nextId);
+  });
+}
+
+async function loadWorks() {
+  try {
+    const response = await fetch('./works.json');
+    if (!response.ok) throw new Error('作品データを読み込めませんでした。');
+    state.works = await response.json();
+    state.works.forEach((work) => { work._placeTokens = getPlaceTokensFromFilename(work.image); });
+    renderWorks();
+    if (state.works.length) {
+      state.activeProjectId = state.works[0].id;
+    }
+    state.animationFrame = requestAnimationFrame(animateRows);
+  } catch (error) {
+    rowsRoot.innerHTML = `<p>作品データを読み込めませんでした。works.jsonをご確認ください。</p>`;
+    console.error(error);
+  }
+}
+
+showView(location.hash.slice(1) || 'home');
+loadWorks();
+
+window.addEventListener('load', () => {
+  if (location.hash === '#project') {
+    const fallbackId = state.activeProjectId || state.filtered[0]?.id || state.works[0]?.id;
+    if (fallbackId) openProject(fallbackId);
+  }
+});
+
+projectView?.addEventListener('click', (event) => {
+  const image = event.target.closest('.project-photo img');
+  if (!image) return;
+  const card = image.closest('.project-photo');
+  if (!card) return;
+  const work = state.filtered.find((item) => item.id === state.activeProjectId) || state.works.find((item) => item.id === state.activeProjectId);
+  if (!work) return;
+  openPhoto(work.id);
+});
+
+if (projectView) {
+  projectView.hidden = true;
 }
