@@ -1,35 +1,32 @@
-    <section class="page-view author-view" data-view="author" hidden>
-      <div class="author-shell">
-        <div class="author-header">
-          <p class="eyebrow">01 / About the author</p>
-          <div class="author-mark">NIKE</div>
-        </div>
-
-        <div class="author-body">
-          <div class="author-story-column">
-            <div class="author-identity">
-              <span>PHOTOGRAPHER</span>
-              <span class="author-divider">/</span>
-              <span>VISUAL DESIGNER</span>
-            </div>
-
-            <div class="portrait-placeholder author-plate">
-              <span>Field Notes</span>
-            </div>
-
-            <p class="lead-copy author-lead">I photograph places as I encounter them — through changing light, weather, distance, and time.</p>
+    <section class="page-view works-view" data-view="works" hidden>
+      <div class="works-shell">
+        <div class="page-heading works-heading">
+          <div class="works-heading-copy">
+            <p class="eyebrow">02 / Selected works</p>
+            <h2>作品について</h2>
           </div>
-
-          <aside class="author-info-panel">
-            <p class="author-statement">My practice began with landscape photography and gradually expanded through travel and everyday observation. I am interested in the quiet moments between people and places, and in how light settles into familiar scenes.</p>
-            <dl class="author-details">
-              <div><dt>Based in</dt><dd>China / Anywhere</dd></div>
-              <div><dt>Practice</dt><dd>Photography / Visual Design</dd></div>
-              <div><dt>Focus</dt><dd>Landscape / Travel / Everyday Places</dd></div>
-              <div><dt>Archive</dt><dd>2023—2026</dd></div>
-              <div><dt>Email</dt><dd>[メールアドレス]</dd></div>
-            </dl>
-          </aside>
+          <p class="heading-note">写真の上にカーソルを置くと、作品の情報が表示されます。</p>
         </div>
+
+        <div class="works-toolbar">
+          <div class="filters" id="filters">
+            <button class="filter-button active" data-filter="all">すべて</button>
+            <button class="filter-button" data-filter="mountain">山岳</button>
+            <button class="filter-button" data-filter="ocean">海岸</button>
+            <button class="filter-button" data-filter="forest">森林</button>
+            <button class="filter-button" data-filter="urban">都市</button>
+          </div>
+          <button class="pause-button" id="pauseButton" type="button">自動再生を停止</button>
+        </div>
+
+        <div class="carousel" id="carousel" aria-label="作品一覧">
+          <div class="works-rows" id="worksRows"></div>
+        </div>
+        <div class="carousel-controls">
+          <button id="previousButton" type="button" aria-label="前の作品">←</button>
+          <span id="worksCounter">01 / 01</span>
+          <button id="nextButton" type="button" aria-label="次の作品">→</button>
+        </div>
+        <p class="swipe-note">5列の作品を2秒ごとに自動で切り替えています。ドラッグでも移動できます。</p>
       </div>
     </section>
