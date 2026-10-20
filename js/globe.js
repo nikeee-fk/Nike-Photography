@@ -23,26 +23,33 @@ if (!globeShell) {
     globeShell.appendChild(shell);
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(34, shell.clientWidth / shell.clientHeight, 0.1, 1000);
-    camera.position.z = 4.1;
+    const camera = new THREE.PerspectiveCamera(32, shell.clientWidth / shell.clientHeight || 1, 0.1, 1000);
+    camera.position.set(0, 0.2, 4.4);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.8));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.setClearColor(0x000000, 0);
     shell.appendChild(renderer.domElement);
 
-    const ambient = new THREE.AmbientLight(0xffffff, 0.9);
-    const pointLight = new THREE.PointLight(0xffffff, 1.4, 100, 2);
-    pointLight.position.set(3, 2.5, 5);
-    scene.add(ambient, pointLight);
+    const ambient = new THREE.AmbientLight(0xf4f1ea, 1.05);
+    const keyLight = new THREE.DirectionalLight(0xf6f2ea, 1.3);
+    keyLight.position.set(2.7, 2.2, 3.6);
+
+    const fillLight = new THREE.DirectionalLight(0xc9d1d8, 0.75);
+    fillLight.position.set(-3.4, -1.2, 2.8);
+
+    scene.add(ambient, keyLight, fillLight);
 
     const globeGroup = new THREE.Group();
+    globeGroup.rotation.y = -0.7;
     scene.add(globeGroup);
 
     const globeTexture = new THREE.TextureLoader().load(
       'https://raw.githubusercontent.com/turban/webgl-earth/master/textures/earth_atmos_2048.jpg',
-      () => {
-        // no-op; texture loaded
+      (texture) => {
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
       },
       undefined,
       () => {
@@ -50,47 +57,55 @@ if (!globeShell) {
       }
     );
 
-    const sphereGeometry = new THREE.SphereGeometry(1.55, 64, 64);
+    const sphereGeometry = new THREE.SphereGeometry(1.52, 96, 96);
     const sphereMaterial = new THREE.MeshStandardMaterial({
-      color: 0xe7e5df,
-      roughness: 0.8,
-      metalness: 0.18,
+      color: 0xe6e0d4,
+      roughness: 0.9,
+      metalness: 0.08,
       map: globeTexture,
-      emissive: 0x121212,
-      emissiveIntensity: 0.15,
+      emissive: 0x111111,
+      emissiveIntensity: 0.1,
+      transparent: true,
+      opacity: 1,
     });
 
     const globe = new THREE.Mesh(sphereGeometry, sphereMaterial);
     globeGroup.add(globe);
 
     const atmosphere = new THREE.Mesh(
-      new THREE.SphereGeometry(1.7, 48, 48),
+      new THREE.SphereGeometry(1.72, 56, 56),
       new THREE.MeshBasicMaterial({
-        color: 0xffffff,
+        color: 0xf2efe9,
         transparent: true,
-        opacity: 0.08,
+        opacity: 0.10,
         side: THREE.BackSide,
       })
     );
     globeGroup.add(atmosphere);
 
     const ring = new THREE.Mesh(
-      new THREE.TorusGeometry(2.2, 0.018, 12, 180),
-      new THREE.MeshBasicMaterial({ color: 0x8d8a82, transparent: true, opacity: 0.28 })
+      new THREE.TorusGeometry(2.28, 0.02, 12, 220),
+      new THREE.MeshBasicMaterial({
+        color: 0x9a958c,
+        transparent: true,
+        opacity: 0.28,
+      })
     );
-    ring.rotation.x = Math.PI / 2.35;
-    ring.rotation.y = 0.6;
+    ring.rotation.x = Math.PI / 2.32;
+    ring.rotation.y = 0.65;
+    ring.rotation.z = -0.18;
     globeGroup.add(ring);
 
     const state = {
-      rotationY: 0.7,
+      rotationY: -0.7,
       rotationX: 0.18,
-      targetRotationY: 0.7,
+      targetRotationY: -0.7,
+      targetRotationX: 0.18,
       isDragging: false,
       dragStartX: 0,
       dragStartY: 0,
-      lastX: 0,
-      lastY: 0,
+      lastX: -0.7,
+      lastY: 0.18,
     };
 
     const onResize = () => {
@@ -101,21 +116,27 @@ if (!globeShell) {
       renderer.setSize(clientWidth, clientHeight, false);
     };
 
-    const resizeObserver = new ResizeObserver(onResize);
-    resizeObserver.observe(shell);
+    const resizeObserver = 'ResizeObserver' in window ? new ResizeObserver(onResize) : null;
+    if (resizeObserver) {
+      resizeObserver.observe(shell);
+    } else {
+      window.addEventListener('resize', onResize);
+    }
     onResize();
 
     const render = () => {
       if (!state.isDragging) {
-        state.rotationY += 0.0038;
+        state.rotationY += 0.0033;
       } else {
         state.rotationY += (state.targetRotationY - state.rotationY) * 0.08;
       }
 
+      state.rotationX += (state.targetRotationX - state.rotationX) * 0.08;
       globe.rotation.y = state.rotationY;
       globe.rotation.x = state.rotationX;
       atmosphere.rotation.y = state.rotationY * 0.9;
-      ring.rotation.z += 0.003;
+      ring.rotation.z += 0.0018;
+      ring.rotation.y += 0.0008;
       renderer.render(scene, camera);
       requestAnimationFrame(render);
     };
@@ -131,15 +152,16 @@ if (!globeShell) {
 
     shell.addEventListener('pointermove', (event) => {
       if (!state.isDragging) return;
-      const deltaX = (event.clientX - state.dragStartX) * 0.008;
-      const deltaY = (event.clientY - state.dragStartY) * 0.005;
+      const deltaX = (event.clientX - state.dragStartX) * 0.006;
+      const deltaY = (event.clientY - state.dragStartY) * 0.004;
       state.targetRotationY = state.lastX - deltaX;
-      state.rotationX = THREE.MathUtils.clamp(state.lastY + deltaY, -0.75, 0.75);
+      state.targetRotationX = THREE.MathUtils.clamp(state.lastY + deltaY, -0.9, 0.9);
     });
 
     const stopDrag = () => {
       state.isDragging = false;
       state.targetRotationY = state.rotationY;
+      state.targetRotationX = state.rotationX;
     };
 
     shell.addEventListener('pointerup', stopDrag);
