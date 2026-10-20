@@ -1,32 +1,39 @@
-    <section class="page-view works-view" data-view="works" hidden>
-      <div class="works-shell">
-        <div class="page-heading works-heading">
-          <div class="works-heading-copy">
-            <p class="eyebrow">02 / Selected works</p>
-            <h2>作品について</h2>
+    <section class="page-view project-view" data-view="project" hidden>
+      <div class="project-shell">
+        <div class="project-header">
+          <p class="project-heading-kicker" id="projectKicker">Project / 2026</p>
+          <div class="project-header-row">
+            <h2 class="project-heading" id="projectTitle">雲の向こう</h2>
+            <button class="project-back-link" id="projectBackLink" type="button">Back to archive</button>
           </div>
-          <p class="heading-note">写真の上にカーソルを置くと、作品の情報が表示されます。</p>
+          <div class="project-meta-summary">
+            <span id="projectLocation">長野</span>
+            <span id="projectYear">2026</span>
+            <span id="projectCategory">山岳</span>
+          </div>
         </div>
 
-        <div class="works-toolbar">
-          <div class="filters" id="filters">
-            <button class="filter-button active" data-filter="all">すべて</button>
-            <button class="filter-button" data-filter="mountain">山岳</button>
-            <button class="filter-button" data-filter="ocean">海岸</button>
-            <button class="filter-button" data-filter="forest">森林</button>
-            <button class="filter-button" data-filter="urban">都市</button>
+        <p class="project-intro" id="projectIntro">朝の光が山の稜線に触れる瞬間を記録した一枚。</p>
+
+        <div class="project-gallery" id="projectGallery"></div>
+
+        <div class="project-info-block">
+          <div class="project-info-title">Field notes</div>
+          <div class="project-info-grid">
+            <div class="project-info-row"><span>Location</span><strong id="projectInfoLocation">長野</strong></div>
+            <div class="project-info-row"><span>Season</span><strong id="projectInfoSeason">Early morning</strong></div>
+            <div class="project-info-row"><span>Format</span><strong id="projectInfoFormat">Digital</strong></div>
+            <div class="project-info-row"><span>Archive</span><strong id="projectInfoArchive">2026</strong></div>
           </div>
-          <button class="pause-button" id="pauseButton" type="button">自動再生を停止</button>
         </div>
 
-        <div class="carousel" id="carousel" aria-label="作品一覧">
-          <div class="works-rows" id="worksRows"></div>
+        <div class="project-next">
+          <div class="project-next-label">Next</div>
+          <a href="#works" class="project-next-link" data-route="works">
+            <span class="project-next-title" id="projectNextTitle">旅の断片</span>
+            <span class="project-next-location" id="projectNextLocation">長野 / 2025</span>
+            <span class="project-next-arrow">→</span>
+          </a>
         </div>
-        <div class="carousel-controls">
-          <button id="previousButton" type="button" aria-label="前の作品">←</button>
-          <span id="worksCounter">01 / 01</span>
-          <button id="nextButton" type="button" aria-label="次の作品">→</button>
-        </div>
-        <p class="swipe-note">5列の作品を2秒ごとに自動で切り替えています。ドラッグでも移動できます。</p>
       </div>
     </section>
