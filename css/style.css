@@ -1,134 +1,180 @@
-.author-view, .works-view, .project-view { background: var(--white); color: var(--black); }
-.author-view {
-  background: var(--white);
-  color: var(--black);
-}
-.author-shell {
-  max-width: 1180px;
-  margin: 0 auto;
-  display: grid;
-  gap: clamp(24px, 4vw, 54px);
-}
-.author-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  gap: 20px;
-}
-.author-mark {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(52px, 8vw, 120px);
-  line-height: .9;
-  letter-spacing: -.08em;
-}
-.author-body {
-  display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.7fr);
-  gap: clamp(28px, 5vw, 90px);
-  align-items: start;
-}
-.author-story-column {
-  display: grid;
-  gap: 28px;
-}
-.author-identity {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  color: #5c5c5a;
-  font-size: 10px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-}
-.author-divider {
-  color: #8a8a87;
-}
-.author-plate {
-  width: min(100%, 520px);
-  min-height: 180px;
-  border: 1px solid rgba(17,17,17,.18);
-  background: linear-gradient(135deg, rgba(17,17,17,0.06), rgba(17,17,17,0.02));
-  display: grid;
-  place-items: center;
-  text-transform: uppercase;
-  letter-spacing: .18em;
-  font-size: 10px;
-  color: #6d6d68;
-}
-.author-lead {
-  max-width: 700px;
-  margin: 0;
-  font-size: clamp(28px, 4vw, 52px);
-  line-height: 1.2;
-  letter-spacing: -.04em;
-}
-.author-info-panel {
-  display: grid;
-  gap: 24px;
-  padding-left: clamp(18px, 2vw, 32px);
-  border-left: 1px solid rgba(17,17,17,.18);
-}
-.author-statement {
-  margin: 0;
-  color: #4f4f4d;
-  font-size: 15px;
-  line-height: 1.9;
-}
-.author-details {
-  margin: 0;
-  border-top: 1px solid rgba(17,17,17,.18);
-}
-.author-details div {
-  display: grid;
-  grid-template-columns: 110px 1fr;
-  gap: 18px;
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(17,17,17,.18);
-}
-dt {
-  color: #888;
-  font-size: 11px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-}
-dd {
-  margin: 0;
-  color: #1b1b1a;
-  font-size: 14px;
-  line-height: 1.6;
-}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ニック — 風景の記憶</title>
+  <meta name="description" content="ニックによる風景写真のポートフォリオ。" />
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="#home" data-route="home">NICK</a>
+    <nav class="main-nav" aria-label="メインナビゲーション">
+      <a href="#author" data-route="author">作者について</a>
+      <a href="#works" data-route="works">作品について</a>
+      <a href="#contact" data-route="contact">お問い合わせ</a>
+    </nav>
+    <button class="menu-button" id="menuButton" aria-label="メニュー">MENU</button>
+  </header>
 
-.page-heading { max-width: 1100px; margin: 0 auto 70px; }
-.page-heading .eyebrow { color: #777; }
-h2 { font-size: clamp(58px, 11vw, 150px); line-height: .85; }
-.author-layout { display: grid; grid-template-columns: minmax(260px, 38vw) minmax(280px, 470px); gap: clamp(40px, 10vw, 150px); align-items: start; max-width: 1100px; margin: auto; }
-.portrait-placeholder { display: grid; aspect-ratio: 4 / 5; place-content: center; background: #d8d8d4; color: #777; font-size: 18px; letter-spacing: .12em; text-align: center; }
-.portrait-placeholder span { margin-top: 12px; font-size: 10px; letter-spacing: .08em; }
-.author-copy { color: #555; font-size: 15px; line-height: 1.9; }
-.lead-copy { color: var(--black); font-family: Georgia, serif; font-size: 26px; line-height: 1.35; }
-.author-details { margin-top: 48px; border-top: 1px solid #ccc; }
-.author-details div { display: grid; grid-template-columns: 100px 1fr; padding: 14px 0; border-bottom: 1px solid #ccc; }
-dt { color: #888; font-size: 11px; } dd { margin: 0; }
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#author" data-route="author">作者について</a>
+    <a href="#works" data-route="works">作品について</a>
+    <a href="#contact" data-route="contact">お問い合わせ</a>
+  </div>
 
-@media (max-width: 700px) {
-  .author-header {
-    display: grid;
-    gap: 18px;
-  }
-  .author-body {
-    grid-template-columns: 1fr;
-  }
-  .author-info-panel {
-    border-left: 0;
-    border-top: 1px solid rgba(17,17,17,.18);
-    padding-left: 0;
-    padding-top: 16px;
-  }
-  .author-identity {
-    flex-wrap: wrap;
-    gap: 8px 18px;
-  }
-  .author-plate {
-    min-height: 140px;
-  }
-}
+  <main>
+    <section class="page-view home-view" data-view="home">
+      <div class="home-content">
+        <p class="eyebrow">Landscape Photography / Visual Archive</p>
+        <h1>風景の<br />記憶</h1>
+        <p class="home-subtitle">光と時間のあいだに残る、静かな景色。</p>
+        <div class="home-actions">
+          <a class="route-button route-button-dark" href="#author" data-route="author">作者について</a>
+          <a class="route-button route-button-light" href="#works" data-route="works">作品について</a>
+        </div>
+      </div>
+      <div class="home-visual" aria-hidden="true">
+        <div id="globeShell" class="globe-shell"></div>
+      </div>
+      <div class="home-index">NICK / 2024—2026</div>
+    </section>
+
+    <section class="page-view author-view" data-view="author" hidden>
+      <div class="author-shell">
+        <div class="author-header">
+          <p class="eyebrow">01 / About the author</p>
+          <div class="author-mark">NIKE</div>
+        </div>
+
+        <div class="author-body">
+          <div class="author-story-column">
+            <div class="author-identity">
+              <span>PHOTOGRAPHER</span>
+              <span class="author-divider">/</span>
+              <span>VISUAL DESIGNER</span>
+            </div>
+
+            <div class="portrait-placeholder author-plate">
+              <span>Field Notes</span>
+            </div>
+
+            <p class="lead-copy author-lead">I photograph places as I encounter them — through changing light, weather, distance, and time.</p>
+          </div>
+
+          <aside class="author-info-panel">
+            <p class="author-statement">My practice began with landscape photography and gradually expanded through travel and everyday observation. I am interested in the quiet moments between people and places, and in how light settles into familiar scenes.</p>
+            <dl class="author-details">
+              <div><dt>Based in</dt><dd>China / Anywhere</dd></div>
+              <div><dt>Practice</dt><dd>Photography / Visual Design</dd></div>
+              <div><dt>Focus</dt><dd>Landscape / Travel / Everyday Places</dd></div>
+              <div><dt>Archive</dt><dd>2023—2026</dd></div>
+              <div><dt>Email</dt><dd>[メールアドレス]</dd></div>
+            </dl>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-view works-view" data-view="works" hidden>
+      <div class="works-shell">
+        <div class="page-heading works-heading">
+          <div class="works-heading-copy">
+            <p class="eyebrow">02 / Selected works</p>
+            <h2>作品について</h2>
+          </div>
+          <p class="heading-note">写真の上にカーソルを置くと、作品の情報が表示されます。</p>
+        </div>
+
+        <div class="works-toolbar">
+          <div class="filters" id="filters">
+            <button class="filter-button active" data-filter="all">すべて</button>
+            <button class="filter-button" data-filter="mountain">山岳</button>
+            <button class="filter-button" data-filter="ocean">海岸</button>
+            <button class="filter-button" data-filter="forest">森林</button>
+            <button class="filter-button" data-filter="urban">都市</button>
+          </div>
+          <button class="pause-button" id="pauseButton" type="button">自動再生を停止</button>
+        </div>
+
+        <div class="carousel" id="carousel" aria-label="作品一覧">
+          <div class="works-rows" id="worksRows"></div>
+        </div>
+        <div class="carousel-controls">
+          <button id="previousButton" type="button" aria-label="前の作品">←</button>
+          <span id="worksCounter">01 / 01</span>
+          <button id="nextButton" type="button" aria-label="次の作品">→</button>
+        </div>
+        <p class="swipe-note">5列の作品を2秒ごとに自動で切り替えています。ドラッグでも移動できます。</p>
+      </div>
+    </section>
+
+    <section class="page-view project-view" data-view="project" hidden>
+      <div class="project-shell">
+        <div class="project-header">
+          <p class="project-heading-kicker" id="projectKicker">Project / 2026</p>
+          <div class="project-header-row">
+            <h2 class="project-heading" id="projectTitle">雲の向こう</h2>
+            <button class="project-back-link" id="projectBackLink" type="button">Back to archive</button>
+          </div>
+          <div class="project-meta-summary">
+            <span id="projectLocation">長野</span>
+            <span id="projectYear">2026</span>
+            <span id="projectCategory">山岳</span>
+          </div>
+        </div>
+
+        <p class="project-intro" id="projectIntro">朝の光が山の稜線に触れる瞬間を記録した一枚。</p>
+
+        <div class="project-gallery" id="projectGallery"></div>
+
+        <div class="project-info-block">
+          <div class="project-info-title">Field notes</div>
+          <div class="project-info-grid">
+            <div class="project-info-row"><span>Location</span><strong id="projectInfoLocation">長野</strong></div>
+            <div class="project-info-row"><span>Season</span><strong id="projectInfoSeason">Early morning</strong></div>
+            <div class="project-info-row"><span>Format</span><strong id="projectInfoFormat">Digital</strong></div>
+            <div class="project-info-row"><span>Archive</span><strong id="projectInfoArchive">2026</strong></div>
+          </div>
+        </div>
+
+        <div class="project-next">
+          <div class="project-next-label">Next</div>
+          <a href="#works" class="project-next-link" data-route="works">
+            <span class="project-next-title" id="projectNextTitle">旅の断片</span>
+            <span class="project-next-location" id="projectNextLocation">長野 / 2025</span>
+            <span class="project-next-arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-view contact-view" data-view="contact" hidden>
+      <div class="page-heading">
+        <p class="eyebrow">03 / Contact</p>
+        <h2>Let's connect.</h2>
+      </div>
+      <div class="contact-layout">
+        <div class="contact-copy">
+          <p>For commissions, collaborations, or print inquiries, please get in touch.</p>
+          <p class="contact-email">[メールアドレス]</p>
+        </div>
+        <aside class="contact-info">
+          <h3 class="small-eyebrow">OPEN TO</h3>
+          <ul>
+            <li>Editorial</li>
+            <li>Photography</li>
+            <li>Visual Design</li>
+            <li>Creative Collaboration</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><span>© 2026 NICK</span><span>Landscape Photography</span></footer>
+  <script type="module" src="./js/globe.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>
