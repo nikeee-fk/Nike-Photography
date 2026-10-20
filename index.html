@@ -1,134 +1,39 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ニック — 風景の記憶</title>
-  <meta name="description" content="ニックによる風景写真のポートフォリオ。" />
-  <link rel="stylesheet" href="./css/style.css" />
-</head>
-<body>
-  <header class="site-header">
-    <a class="logo" href="#home" data-route="home">NICK</a>
-    <nav class="main-nav" aria-label="メインナビゲーション">
-      <a href="#author" data-route="author">作者について</a>
-      <a href="#works" data-route="works">作品について</a>
-      <a href="#contact" data-route="contact">お問い合わせ</a>
-    </nav>
-    <button class="menu-button" id="menuButton" aria-label="メニュー">MENU</button>
-  </header>
-
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="#author" data-route="author">作者について</a>
-    <a href="#works" data-route="works">作品について</a>
-    <a href="#contact" data-route="contact">お問い合わせ</a>
-  </div>
-
-  <main>
-    <section class="page-view home-view" data-view="home">
-      <div class="home-content">
-        <p class="eyebrow">Landscape Photography / Visual Archive</p>
-        <h1>風景の<br />記憶</h1>
-        <p class="home-subtitle">光と時間のあいだに残る、静かな景色。</p>
-        <div class="home-actions">
-          <a class="route-button route-button-dark" href="#author" data-route="author">作者について</a>
-          <a class="route-button route-button-light" href="#works" data-route="works">作品について</a>
-        </div>
-      </div>
-      <div class="home-visual" aria-hidden="true">
-        <div id="globeShell" class="globe-shell"></div>
-      </div>
-      <div class="home-index">NICK / 2024—2026</div>
-    </section>
-
-    <section class="page-view author-view" data-view="author" hidden>
-      <div class="page-heading">
-        <p class="eyebrow">01 / About the author</p>
-        <h2>作者について</h2>
-      </div>
-      <div class="author-layout">
-        <div class="portrait-placeholder">
-          <div class="author-typography">
-            <div class="author-name">NIKE</div>
-            <div class="author-titles">
-              <div>PHOTOGRAPHER</div>
-              <div>/</div>
-              <div>VISUAL DESIGNER</div>
-            </div>
-            <div class="author-brief">Based in China<br/>Working across places, light and time.</div>
+    <section class="page-view project-view" data-view="project" hidden>
+      <div class="project-shell">
+        <div class="project-header">
+          <p class="project-heading-kicker" id="projectKicker">Project / 2026</p>
+          <div class="project-header-row">
+            <h2 class="project-heading" id="projectTitle">雲の向こう</h2>
+            <button class="project-back-link" id="projectBackLink" type="button">Back to archive</button>
+          </div>
+          <div class="project-meta-summary">
+            <span id="projectLocation">長野</span>
+            <span id="projectYear">2026</span>
+            <span id="projectCategory">山岳</span>
           </div>
         </div>
-        <div class="author-copy">
-          <p class="lead-copy">I photograph places as I encounter them — through changing light, weather, distance, and time.</p>
-          <p>My practice began with landscape photography and gradually expanded through travel and everyday observation. I am interested in the quiet moments between people and places, and in how light settles into familiar scenes.</p>
-          <dl class="author-details">
-            <div><dt>Based in</dt><dd>China / Anywhere</dd></div>
-            <div><dt>Practice</dt><dd>Photography / Visual Design</dd></div>
-            <div><dt>Focus</dt><dd>Landscape / Travel / Everyday Places</dd></div>
-            <div><dt>Archive</dt><dd>2023—2026</dd></div>
-            <div><dt>Email</dt><dd>[メールアドレス]</dd></div>
-          </dl>
+
+        <p class="project-intro" id="projectIntro">朝の光が山の稜線に触れる瞬間を記録した一枚。</p>
+
+        <div class="project-gallery" id="projectGallery"></div>
+
+        <div class="project-info-block">
+          <div class="project-info-title">Field notes</div>
+          <div class="project-info-grid">
+            <div class="project-info-row"><span>Location</span><strong id="projectInfoLocation">長野</strong></div>
+            <div class="project-info-row"><span>Season</span><strong id="projectInfoSeason">Early morning</strong></div>
+            <div class="project-info-row"><span>Format</span><strong id="projectInfoFormat">Digital</strong></div>
+            <div class="project-info-row"><span>Archive</span><strong id="projectInfoArchive">2026</strong></div>
+          </div>
+        </div>
+
+        <div class="project-next">
+          <div class="project-next-label">Next</div>
+          <a href="#works" class="project-next-link" data-route="works">
+            <span class="project-next-title" id="projectNextTitle">旅の断片</span>
+            <span class="project-next-location" id="projectNextLocation">長野 / 2025</span>
+            <span class="project-next-arrow">→</span>
+          </a>
         </div>
       </div>
     </section>
-
-    <section class="page-view works-view" data-view="works" hidden>
-      <div class="page-heading works-heading">
-        <div>
-          <p class="eyebrow">02 / Selected works</p>
-          <h2>作品について</h2>
-        </div>
-        <p class="heading-note">写真の上にカーソルを置くと、作品の情報が表示されます。</p>
-      </div>
-
-      <div class="works-toolbar">
-        <div class="filters" id="filters">
-          <button class="filter-button active" data-filter="all">すべて</button>
-          <button class="filter-button" data-filter="mountain">山岳</button>
-          <button class="filter-button" data-filter="ocean">海岸</button>
-          <button class="filter-button" data-filter="forest">森林</button>
-          <button class="filter-button" data-filter="urban">都市</button>
-        </div>
-        <button class="pause-button" id="pauseButton" type="button">自動再生を停止</button>
-      </div>
-
-      <div class="carousel" id="carousel" aria-label="作品一覧">
-        <div class="works-rows" id="worksRows"></div>
-      </div>
-      <div class="carousel-controls">
-        <button id="previousButton" type="button" aria-label="前の作品">←</button>
-        <span id="worksCounter">01 / 01</span>
-        <button id="nextButton" type="button" aria-label="次の作品">→</button>
-      </div>
-      <p class="swipe-note">5列の作品を2秒ごとに自動で切り替えています。ドラッグでも移動できます。</p>
-    </section>
-
-    <section class="page-view contact-view" data-view="contact" hidden>
-      <div class="page-heading">
-        <p class="eyebrow">03 / Contact</p>
-        <h2>Let's connect.</h2>
-      </div>
-      <div class="contact-layout">
-        <div class="contact-copy">
-          <p>For commissions, collaborations, or print inquiries, please get in touch.</p>
-          <p class="contact-email">[メールアドレス]</p>
-        </div>
-        <aside class="contact-info">
-          <h3 class="small-eyebrow">OPEN TO</h3>
-          <ul>
-            <li>Editorial</li>
-            <li>Photography</li>
-            <li>Visual Design</li>
-            <li>Creative Collaboration</li>
-          </ul>
-        </aside>
-      </div>
-    </section>
-
-  </main>
-
-  <footer class="site-footer"><span>© 2026 NICK</span><span>Landscape Photography</span></footer>
-  <script type="module" src="./js/globe.js"></script>
-  <script src="./js/app.js"></script>
-</body>
-</html>

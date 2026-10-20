@@ -1,407 +1,180 @@
-:root {
-  --black: #0b0b0b;
-  --white: #f5f5f2;
-  --gray: #888883;
-  --line: rgba(245, 245, 242, .22);
-  --page: clamp(20px, 4vw, 64px);
-  --soft: #d8d6d0;
-  --panel: #eceae5;
-  --muted: #6d6d68;
-}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ニック — 風景の記憶</title>
+  <meta name="description" content="ニックによる風景写真のポートフォリオ。" />
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="#home" data-route="home">NICK</a>
+    <nav class="main-nav" aria-label="メインナビゲーション">
+      <a href="#author" data-route="author">作者について</a>
+      <a href="#works" data-route="works">作品について</a>
+      <a href="#contact" data-route="contact">お問い合わせ</a>
+    </nav>
+    <button class="menu-button" id="menuButton" aria-label="メニュー">MENU</button>
+  </header>
 
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  margin: 0;
-  background: var(--black);
-  color: var(--white);
-  font-family: Arial, "Helvetica Neue", "Noto Sans JP", sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-body.menu-open, body.modal-open { overflow: hidden; }
-a { color: inherit; text-decoration: none; }
-button { color: inherit; font: inherit; cursor: pointer; }
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#author" data-route="author">作者について</a>
+    <a href="#works" data-route="works">作品について</a>
+    <a href="#contact" data-route="contact">お問い合わせ</a>
+  </div>
 
-.site-header {
-  position: fixed;
-  inset: 0 0 auto;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 26px var(--page);
-  mix-blend-mode: difference;
-}
-.logo { font-size: 12px; font-weight: 700; letter-spacing: .22em; }
-.main-nav { display: flex; gap: 32px; font-size: 11px; letter-spacing: .12em; }
-.main-nav a { opacity: .65; transition: opacity .25s; }
-.main-nav a:hover, .main-nav a.active { opacity: 1; }
-.menu-button { display: none; border: 0; background: transparent; font-size: 10px; letter-spacing: .15em; }
-.mobile-menu { display: none; }
+  <main>
+    <section class="page-view home-view" data-view="home">
+      <div class="home-content">
+        <p class="eyebrow">Landscape Photography / Visual Archive</p>
+        <h1>風景の<br />記憶</h1>
+        <p class="home-subtitle">光と時間のあいだに残る、静かな景色。</p>
+        <div class="home-actions">
+          <a class="route-button route-button-dark" href="#author" data-route="author">作者について</a>
+          <a class="route-button route-button-light" href="#works" data-route="works">作品について</a>
+        </div>
+      </div>
+      <div class="home-visual" aria-hidden="true">
+        <div id="globeShell" class="globe-shell"></div>
+      </div>
+      <div class="home-index">NICK / 2024—2026</div>
+    </section>
 
-.page-view { min-height: 100vh; padding: 150px var(--page) 100px; }
-.home-view { position: relative; display: flex; align-items: center; overflow: hidden; background: var(--black); }
-.home-view::after { position: absolute; right: 5vw; bottom: -14vw; width: 52vw; height: 52vw; border: 1px solid rgba(245,245,242,.17); border-radius: 50%; content: ""; }
-.home-content { position: relative; z-index: 1; }
-.eyebrow { margin: 0 0 24px; color: var(--gray); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; }
-h1, h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-weight: 400; letter-spacing: -.08em; }
-h1 { font-size: clamp(86px, 18vw, 260px); line-height: .78; }
-.home-subtitle { margin: 38px 0 0; color: #aaa9a4; font-size: 15px; letter-spacing: .04em; }
-.home-actions { display: flex; gap: 10px; margin-top: 56px; }
-.route-button { display: inline-flex; min-width: 142px; justify-content: center; padding: 14px 20px; border: 1px solid var(--white); font-size: 11px; letter-spacing: .12em; transition: background .25s ease, color .25s ease; }
-.route-button-dark { background: var(--white); color: var(--black); }
-.route-button-light:hover { background: var(--white); color: var(--black); }
-.home-index { position: absolute; right: var(--page); bottom: 32px; color: var(--gray); font-size: 10px; letter-spacing: .16em; }
+    <section class="page-view author-view" data-view="author" hidden>
+      <div class="author-shell">
+        <div class="author-header">
+          <p class="eyebrow">01 / About the author</p>
+          <div class="author-mark">NIKE</div>
+        </div>
 
-.author-view, .works-view, .project-view { background: var(--white); color: var(--black); }
-.page-heading { max-width: 1100px; margin: 0 auto 70px; }
-.page-heading .eyebrow { color: #777; }
-h2 { font-size: clamp(58px, 11vw, 150px); line-height: .85; }
-.author-layout { display: grid; grid-template-columns: minmax(260px, 38vw) minmax(280px, 470px); gap: clamp(40px, 10vw, 150px); align-items: start; max-width: 1100px; margin: auto; }
-.portrait-placeholder { display: grid; aspect-ratio: 4 / 5; place-content: center; background: #d8d8d4; color: #777; font-size: 18px; letter-spacing: .12em; text-align: center; }
-.portrait-placeholder span { margin-top: 12px; font-size: 10px; letter-spacing: .08em; }
-.author-copy { color: #555; font-size: 15px; line-height: 1.9; }
-.lead-copy { color: var(--black); font-family: Georgia, serif; font-size: 26px; line-height: 1.35; }
-.author-details { margin-top: 48px; border-top: 1px solid #ccc; }
-.author-details div { display: grid; grid-template-columns: 100px 1fr; padding: 14px 0; border-bottom: 1px solid #ccc; }
-dt { color: #888; font-size: 11px; } dd { margin: 0; }
+        <div class="author-body">
+          <div class="author-story-column">
+            <div class="author-identity">
+              <span>PHOTOGRAPHER</span>
+              <span class="author-divider">/</span>
+              <span>VISUAL DESIGNER</span>
+            </div>
 
-.works-view { min-height: 100vh; padding-left: 0; padding-right: 0; overflow: hidden; }
-.works-heading, .works-toolbar, .swipe-note { padding-left: var(--page); padding-right: var(--page); }
-.works-heading { display: flex; justify-content: space-between; align-items: end; gap: 30px; }
-.heading-note { max-width: 270px; color: #777; font-size: 12px; line-height: 1.7; }
-.works-toolbar { display: flex; justify-content: space-between; align-items: center; padding-bottom: 18px; border-bottom: 1px solid #d2d2ce; }
-.filters { display: flex; gap: 22px; flex-wrap: wrap; }
-.filter-button, .pause-button { border: 0; border-bottom: 1px solid transparent; background: transparent; color: #888; font-size: 10px; letter-spacing: .12em; }
-.filter-button.active, .filter-button:hover, .pause-button:hover { border-bottom-color: var(--black); color: var(--black); }
-.pause-button { color: #555; }
-.carousel { overflow: hidden; padding: 36px 0 20px; cursor: grab; touch-action: pan-y; }
-.carousel.dragging { cursor: grabbing; }
-.works-rows { display: grid; gap: 14px; }
-.carousel-row { overflow: hidden; }
-.carousel-row-track { display: flex; width: max-content; gap: 14px; padding: 0 var(--page); will-change: transform; }
-.work-card {
-  position: relative;
-  flex: 0 0 calc((100vw - (2 * var(--page)) - (9 * 14px)) / 10);
-  min-width: 88px;
-  overflow: hidden;
-  background: #ddd;
-  cursor: pointer;
-}
-.work-card img {
-  display: block;
-  width: 100%;
-  height: clamp(120px, 13vw, 190px);
-  object-fit: cover;
-  filter: grayscale(100%);
-  transition: transform .42s ease, filter .42s ease, opacity .42s ease;
-}
-.work-card:hover img { transform: scale(1.025); filter: grayscale(0); }
-.work-card-info {
-  position: absolute;
-  inset: auto 0 0;
-  padding: 52px 12px 12px;
-  background: linear-gradient(transparent, rgba(0,0,0,.82));
-  color: white;
-  opacity: 0;
-  transition: opacity .3s ease;
-  pointer-events: none;
-}
-.work-card:hover .work-card-info { opacity: 1; }
-.work-card-title { margin: 0 0 5px; font-family: Georgia, serif; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.work-card-description { max-width: 330px; margin: 0 0 9px; font-size: 10px; line-height: 1.5; color: #ddd; }
-.work-card-meta { display: flex; gap: 8px; color: #bbb; font-size: 8px; letter-spacing: .08em; white-space: nowrap; }
-.work-card-action {
-  display: inline-flex;
-  margin-top: 8px;
-  border: 1px solid rgba(255,255,255,.55);
-  background: rgba(255,255,255,.04);
-  color: var(--white);
-  padding: 6px 8px;
-  font-size: 8px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  pointer-events: auto;
-}
-.carousel-controls { display: flex; align-items: center; justify-content: center; gap: 24px; padding-top: 10px; }
-.carousel-controls button { border: 0; background: transparent; font-size: 24px; }
-#worksCounter { color: #777; font-size: 10px; letter-spacing: .12em; }
-.swipe-note { margin: 20px 0 0; color: #888; font-size: 10px; text-align: center; }
-.site-footer { display: flex; justify-content: space-between; padding: 24px var(--page); border-top: 1px solid var(--line); color: #888; font-size: 10px; letter-spacing: .13em; text-transform: uppercase; }
+            <div class="portrait-placeholder author-plate">
+              <span>Field Notes</span>
+            </div>
 
-.project-view {
-  background: var(--white);
-  color: var(--black);
-  min-height: 100vh;
-  padding-top: 150px;
-}
-.project-shell {
-  max-width: 1180px;
-  margin: 0 auto;
-}
-.project-header {
-  margin-bottom: clamp(28px, 4vw, 60px);
-}
-.project-heading-kicker {
-  margin-bottom: 18px;
-  color: var(--muted);
-  font-size: 10px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-}
-.project-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  gap: 24px;
-}
-.project-heading {
-  max-width: 760px;
-  font-size: clamp(54px, 8vw, 120px);
-  letter-spacing: -.06em;
-}
-.project-back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 10px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: #5a5a59;
-  transition: transform .25s ease, opacity .25s ease;
-}
-.project-back-link:hover { transform: translateX(-4px); }
-.project-meta-summary {
-  display: flex;
-  gap: 28px;
-  margin-top: 18px;
-  color: #444;
-  font-size: 11px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-}
-.project-intro {
-  max-width: 620px;
-  margin: 0 0 54px;
-  color: #3f3f3d;
-  font-size: clamp(18px, 2vw, 26px);
-  line-height: 1.5;
-  font-family: Georgia, "Times New Roman", serif;
-}
-.project-gallery {
-  display: grid;
-  grid-template-columns: 1.35fr 1fr 1fr;
-  gap: 18px;
-  margin-bottom: 80px;
-}
-.project-photo {
-  position: relative;
-  overflow: hidden;
-  background: var(--soft);
-  cursor: pointer;
-  min-height: 220px;
-  transition: transform .3s ease;
-}
-.project-photo:hover { transform: translateY(-2px); }
-.project-photo img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: grayscale(100%);
-  transition: transform .5s ease, filter .4s ease, opacity .4s ease;
-}
-.project-photo:hover img { transform: scale(1.02); filter: grayscale(80%); }
-.project-photo--hero { grid-column: 1 / span 2; min-height: 620px; }
-.project-photo--wide { grid-column: 1 / span 2; min-height: 420px; }
-.project-photo--tall { min-height: 520px; }
-.project-photo--split { min-height: 360px; }
+            <p class="lead-copy author-lead">I photograph places as I encounter them — through changing light, weather, distance, and time.</p>
+          </div>
 
-.project-info-block {
-  margin: 90px 0 60px;
-  padding-top: 18px;
-  border-top: 1px solid #d4d1cc;
-}
-.project-info-title {
-  margin-bottom: 22px;
-  font-size: 10px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.project-info-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 42px;
-}
-.project-info-row {
-  display: grid;
-  grid-template-columns: minmax(120px, 180px) 1fr;
-  gap: 18px;
-  padding: 14px 0;
-  border-bottom: 1px solid #d2d0cc;
-  font-size: 11px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
-.project-info-row span { color: var(--muted); }
-.project-info-row strong {
-  color: var(--black);
-  letter-spacing: .08em;
-  text-transform: none;
-  font-size: 15px;
-  font-weight: 400;
-}
+          <aside class="author-info-panel">
+            <p class="author-statement">My practice began with landscape photography and gradually expanded through travel and everyday observation. I am interested in the quiet moments between people and places, and in how light settles into familiar scenes.</p>
+            <dl class="author-details">
+              <div><dt>Based in</dt><dd>China / Anywhere</dd></div>
+              <div><dt>Practice</dt><dd>Photography / Visual Design</dd></div>
+              <div><dt>Focus</dt><dd>Landscape / Travel / Everyday Places</dd></div>
+              <div><dt>Archive</dt><dd>2023—2026</dd></div>
+              <div><dt>Email</dt><dd>[メールアドレス]</dd></div>
+            </dl>
+          </aside>
+        </div>
+      </div>
+    </section>
 
-.project-next {
-  margin-top: 90px;
-  padding-top: 18px;
-  border-top: 1px solid #d4d1cc;
-}
-.project-next-label {
-  margin-bottom: 18px;
-  color: var(--muted);
-  font-size: 10px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-}
-.project-next-link {
-  display: block;
-  transition: transform .25s ease, opacity .25s ease;
-}
-.project-next-link:hover { transform: translateY(-2px); }
-.project-next-title {
-  display: block;
-  font-size: clamp(28px, 4vw, 58px);
-  font-family: Georgia, "Times New Roman", serif;
-  letter-spacing: -.04em;
-}
-.project-next-location {
-  display: block;
-  margin-top: 8px;
-  color: var(--muted);
-  font-size: 10px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-}
-.project-next-arrow {
-  display: inline-block;
-  margin-top: 8px;
-  font-size: 28px;
-}
+    <section class="page-view works-view" data-view="works" hidden>
+      <div class="works-shell">
+        <div class="page-heading works-heading">
+          <div class="works-heading-copy">
+            <p class="eyebrow">02 / Selected works</p>
+            <h2>作品について</h2>
+          </div>
+          <p class="heading-note">写真の上にカーソルを置くと、作品の情報が表示されます。</p>
+        </div>
 
-.project-empty-state {
-  display: grid;
-  place-items: center;
-  min-height: 320px;
-  color: var(--muted);
-  border: 1px solid #ddd7d0;
-  background: #f3f1ee;
-}
+        <div class="works-toolbar">
+          <div class="filters" id="filters">
+            <button class="filter-button active" data-filter="all">すべて</button>
+            <button class="filter-button" data-filter="mountain">山岳</button>
+            <button class="filter-button" data-filter="ocean">海岸</button>
+            <button class="filter-button" data-filter="forest">森林</button>
+            <button class="filter-button" data-filter="urban">都市</button>
+          </div>
+          <button class="pause-button" id="pauseButton" type="button">自動再生を停止</button>
+        </div>
 
-.project-lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 120;
-  display: grid;
-  place-items: center;
-  padding: clamp(26px, 4vw, 72px);
-  background: rgba(8, 8, 8, .9);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .35s ease;
-}
-.project-lightbox.open { opacity: 1; pointer-events: auto; }
-.project-lightbox-shell {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: min(85vw, 1100px);
-  max-height: 84vh;
-}
-.project-lightbox-image {
-  display: block;
-  width: 100%;
-  max-height: 80vh;
-  object-fit: contain;
-  background: #090909;
-}
-.project-lightbox-close {
-  position: absolute;
-  top: -50px;
-  right: 0;
-  border: 0;
-  background: transparent;
-  color: #fff;
-  font-size: 28px;
-  line-height: 1;
-}
-.project-lightbox-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  border: 1px solid rgba(255,255,255,.4);
-  background: rgba(255,255,255,.04);
-  color: white;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  font-size: 18px;
-}
-.project-lightbox-prev { left: -56px; }
-.project-lightbox-next { right: -56px; }
-.project-lightbox-meta {
-  position: fixed;
-  left: 50%;
-  bottom: 28px;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  color: rgba(255,255,255,.84);
-  font-size: 10px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
+        <div class="carousel" id="carousel" aria-label="作品一覧">
+          <div class="works-rows" id="worksRows"></div>
+        </div>
+        <div class="carousel-controls">
+          <button id="previousButton" type="button" aria-label="前の作品">←</button>
+          <span id="worksCounter">01 / 01</span>
+          <button id="nextButton" type="button" aria-label="次の作品">→</button>
+        </div>
+        <p class="swipe-note">5列の作品を2秒ごとに自動で切り替えています。ドラッグでも移動できます。</p>
+      </div>
+    </section>
 
-.photo-modal { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: clamp(28px, 7vw, 96px); background: rgba(8, 8, 8, .94); opacity: 0; pointer-events: none; transition: opacity .3s ease; }
-.photo-modal.open { opacity: 1; pointer-events: auto; }
-.photo-modal-inner { position: relative; width: min(78vw, 1040px); max-height: 82vh; padding: 22px; background: #151515; }
-.photo-modal-image { display: block; width: 100%; height: min(72vh, 720px); object-fit: contain; background: #090909; }
-.photo-modal-close { position: absolute; top: -44px; right: 0; border: 0; background: transparent; color: white; font-size: 28px; line-height: 1; }
-.photo-modal-caption { display: flex; justify-content: space-between; gap: 20px; padding-top: 12px; color: #aaa; font-size: 10px; letter-spacing: .1em; }
-.photo-modal-description { margin-top: 8px; color: #c7c7c3; font-size: 12px; line-height: 1.6; }
+    <section class="page-view project-view" data-view="project" hidden>
+      <div class="project-shell">
+        <div class="project-header">
+          <p class="project-heading-kicker" id="projectKicker">Project / 2026</p>
+          <div class="project-header-row">
+            <h2 class="project-heading" id="projectTitle">雲の向こう</h2>
+            <button class="project-back-link" id="projectBackLink" type="button">Back to archive</button>
+          </div>
+          <div class="project-meta-summary">
+            <span id="projectLocation">長野</span>
+            <span id="projectYear">2026</span>
+            <span id="projectCategory">山岳</span>
+          </div>
+        </div>
 
-[hidden] { display: none !important; }
-@media (max-width: 700px) {
-  .main-nav { display: none; }
-  .menu-button { display: block; }
-  .mobile-menu { position: fixed; inset: 0; z-index: 10; flex-direction: column; justify-content: center; gap: 24px; padding: var(--page); background: var(--black); }
-  .mobile-menu.open { display: flex; }
-  .mobile-menu a { font-family: Georgia, serif; font-size: 42px; }
-  .home-actions { flex-direction: column; width: 190px; }
-  .author-layout { grid-template-columns: 1fr; }
-  .author-copy { max-width: 100%; }
-  .works-heading { display: block; }
-  .heading-note { margin-top: 28px; }
-  .works-toolbar { align-items: flex-start; flex-direction: column; gap: 20px; }
-  .carousel-row-track { gap: 10px; }
-  .work-card { flex-basis: calc((100vw - (2 * var(--page)) - (4 * 10px)) / 5); min-width: 72px; }
-  .work-card img { height: 110px; }
-  .work-card-info { opacity: 1; }
-  .project-header-row { display: block; }
-  .project-back-link { margin-top: 18px; }
-  .project-gallery { grid-template-columns: 1fr; }
-  .project-photo--hero, .project-photo--wide { grid-column: auto; min-height: 300px; }
-  .project-photo--tall, .project-photo--split { min-height: 280px; }
-  .project-info-grid { grid-template-columns: 1fr; }
-  .project-lightbox-shell { width: 92vw; }
-  .project-lightbox-prev { left: 10px; }
-  .project-lightbox-next { right: 10px; }
-  .project-lightbox-meta { bottom: 18px; }
-  .photo-modal { padding: 26px; }
-  .photo-modal-inner { width: 92vw; padding: 12px; }
-  .photo-modal-image { height: 66vh; }
-  .site-footer { align-items: flex-start; flex-direction: column; gap: 10px; }
-}
+        <p class="project-intro" id="projectIntro">朝の光が山の稜線に触れる瞬間を記録した一枚。</p>
+
+        <div class="project-gallery" id="projectGallery"></div>
+
+        <div class="project-info-block">
+          <div class="project-info-title">Field notes</div>
+          <div class="project-info-grid">
+            <div class="project-info-row"><span>Location</span><strong id="projectInfoLocation">長野</strong></div>
+            <div class="project-info-row"><span>Season</span><strong id="projectInfoSeason">Early morning</strong></div>
+            <div class="project-info-row"><span>Format</span><strong id="projectInfoFormat">Digital</strong></div>
+            <div class="project-info-row"><span>Archive</span><strong id="projectInfoArchive">2026</strong></div>
+          </div>
+        </div>
+
+        <div class="project-next">
+          <div class="project-next-label">Next</div>
+          <a href="#works" class="project-next-link" data-route="works">
+            <span class="project-next-title" id="projectNextTitle">旅の断片</span>
+            <span class="project-next-location" id="projectNextLocation">長野 / 2025</span>
+            <span class="project-next-arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-view contact-view" data-view="contact" hidden>
+      <div class="page-heading">
+        <p class="eyebrow">03 / Contact</p>
+        <h2>Let's connect.</h2>
+      </div>
+      <div class="contact-layout">
+        <div class="contact-copy">
+          <p>For commissions, collaborations, or print inquiries, please get in touch.</p>
+          <p class="contact-email">[メールアドレス]</p>
+        </div>
+        <aside class="contact-info">
+          <h3 class="small-eyebrow">OPEN TO</h3>
+          <ul>
+            <li>Editorial</li>
+            <li>Photography</li>
+            <li>Visual Design</li>
+            <li>Creative Collaboration</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><span>© 2026 NICK</span><span>Landscape Photography</span></footer>
+  <script type="module" src="./js/globe.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>
